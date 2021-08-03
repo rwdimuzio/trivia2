@@ -2,8 +2,13 @@
   <ion-toolbar>
     <ion-title>game</ion-title>
   </ion-toolbar>
+  
 </ion-header>
 
 <ion-content>
-
+  
 </ion-content>
+
+<ion-footer>
+  <ion-button (click)="endGame()" color="success" expand="block"><ion-spinner *ngIf="loading"></ion-spinner>&nbsp;End Game</ion-button>       
+</ion-footer>

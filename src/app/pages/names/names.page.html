@@ -1,9 +1,56 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>names</ion-title>
+    <ion-title>Start Game</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>Rounds</ion-label>
+      <ion-select>
+          <ion-select-option>1</ion-select-option>
+          <ion-select-option>2</ion-select-option>
+          <ion-select-option>3</ion-select-option>
+          <ion-select-option>4</ion-select-option>
+          <ion-select-option>5</ion-select-option>
+      </ion-select>   
+    </ion-item>  
+
+    <ion-item>
+      <ion-label>Question per Round</ion-label>
+      <ion-select>
+          <ion-select-option>8</ion-select-option>
+          <ion-select-option>12</ion-select-option>
+          <ion-select-option>16</ion-select-option>
+      </ion-select>   
+    </ion-item>  
+
+    <ion-item>
+      <ion-label position="stacked">Player 1</ion-label>
+      <ion-input></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Player 2</ion-label>
+      <ion-input></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Player 3</ion-label>
+      <ion-input></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Player 4</ion-label>
+      <ion-input></ion-input>
+    </ion-item>
+
+  </ion-list>
 
 </ion-content>
+<ion-footer>
+  <div class="left w50">
+    <ion-button [routerLink]="['/start']"  color="light" expand="block">&nbsp;Back</ion-button>
+  </div>
+  <div class="left w50">
+    <ion-button (click)="next()"color="success" expand="block"><ion-spinner *ngIf="loading"></ion-spinner>&nbsp;Begin</ion-button>       
+  </div>
+</ion-footer>

@@ -44,7 +44,7 @@ export class GamePage implements OnInit {
   questions: Array<any> = [];
 
   token = "";
-s
+
   constructor(private alertController:AlertController, private router:Router, private webapiService:ApiService) { }
 
   ngOnInit() {
@@ -102,9 +102,6 @@ s
       });
   }
 
-  open(url) {
-    cordova.InAppBrowser.open(url, '_self', 'location=no,footer=yes,footercolor=#eeeeee,mediaPlaybackRequiresUserAction=no');
-  }
   mergeQandA(questions, answer) {
     var list = Array();
     for (var i in questions) {

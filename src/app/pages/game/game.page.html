@@ -1,12 +1,31 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>game</ion-title>
+    {{gameObject.currentPlayer().name}}
+
   </ion-toolbar>
   
 </ion-header>
 
 <ion-content>
-  
+  <ion-item *ngIf="loading" no-lines>
+    <ion-spinner></ion-spinner>
+  </ion-item>
+  <ion-card *ngIf="noSources" class="no-sources">
+    No Sources selected<br/>
+    <ion-button [routerLink]="['/tabs/tab2']">Select</ion-button>
+  </ion-card>
+  <ion-refresher (ionRefresh)="doRefresh($event)" slot='fixed'></ion-refresher>
+<ion-list>
+    <app-question-summary [gameObject]='gameObject' [questions]='questions'></app-question-summary>
+    <div *ngIf="gameObject.question!=''">
+      <ion-card>
+        <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" [gameObject]='gameObject' [question]="gameObject.question"></app-question-multi-choice>
+        <app-question-true-false *ngIf="gameObject.question.type==='boolean'" [gameObject]='gameObject' [question]='gameObject.question'></app-question-true-false>
+      </ion-card>  
+    </div>
+  </ion-list>
+
 </ion-content>
 
 <ion-footer>

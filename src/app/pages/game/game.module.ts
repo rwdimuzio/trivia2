@@ -7,6 +7,9 @@ import { IonicModule } from '@ionic/angular';
 import { GamePageRoutingModule } from './game-routing.module';
 
 import { GamePage } from './game.page';
+import { QuestionMultiChoiceComponent } from 'src/app/components/question-multi-choice/question-multi-choice.component';
+import { QuestionSummaryComponent } from 'src/app/components/question-summary/question-summary.component';
+import { QuestionTrueFalseComponent } from 'src/app/components/question-true-false/question-true-false.component';
 
 @NgModule({
   imports: [
@@ -15,6 +18,6 @@ import { GamePage } from './game.page';
     IonicModule,
     GamePageRoutingModule
   ],
-  declarations: [GamePage]
+  declarations: [GamePage,QuestionMultiChoiceComponent, QuestionTrueFalseComponent, QuestionSummaryComponent]
 })
 export class GamePageModule {}

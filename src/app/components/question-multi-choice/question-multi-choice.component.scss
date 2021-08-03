@@ -1,0 +1,83 @@
+.no-sources {
+    margin-top: 25px;
+    padding: 25px;
+    background-color: #fff;
+}
+ion-card {
+    padding: 5px;
+}
+ion-avatar {
+    --border-radius: 5px;
+}
+
+.happy {
+    background: #d3ffd3;
+}
+.happy ion-icon { 
+    color: #81f781;
+}
+ion-item.happy {
+    box-shadow: 0 0 3px 0 #ccc; //var(--ion-color-medium);
+}
+
+.sad {
+    background: #ffeaea;
+
+}
+.sad ion-icon { 
+    color: #ff9797;
+}
+
+
+.star {    
+    background: #f8f8f8;
+
+}
+.star ion-icon { 
+    color: #ccc;
+}
+
+
+.transparent {
+    --background: transparent;
+}
+
+.transparent ion-icon { 
+    float: left;
+    min-width: 50px;
+}
+.transparent div { 
+    float: left;
+}
+ion-item {
+    border-radius: 12px !important;
+}
+
+.difficulty ion-icon {
+    color: #fff;
+    padding: 3px;
+}
+ion-badge.difficulty {
+    min-width: 70px;
+}
+
+ion-button.noicon{
+    --background: #eee;
+    --color:  #aaa;
+}
+
+ion-button.happy{
+    --background: #d3ffd3;
+    --color:  #56d356;
+}
+ion-button.sad{
+    --background: #ffeaea;
+    --color:  #fa9797;
+}
+ion-list ion-button {
+    width: 48%;
+    margin: auto;
+    margin-right: 5px;
+    padding-right: 3px;
+
+}

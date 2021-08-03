@@ -1,0 +1,46 @@
+.G {
+    background-color: #90b2e5;
+    border-color: #5986d3 !important;
+}
+.E {
+    background-color: #f974a9;
+    border-color: #e42974 !important;
+}
+.H {
+    background-color: #f3fd77;
+    border-color: #c2c95c !important;
+}
+.AL {
+    background-color: #b99378;
+    border-color: #896c5c !important;
+}
+.SN {
+    background-color: #8cc37d;
+    border-color: #688e5b !important;
+}
+.SL {
+    background-color: #f6826e;
+    border-color: #b56053 !important;
+}
+
+ion-card > div > div {
+    float: left; width: 23%; border: solid 3px;  padding: 3px; margin: 3px;  
+    color:#000;
+    font-size: x-large;
+    text-align: center; 
+    border-radius: 10%;
+};
+
+.difficulty {
+    font-size: smaller;
+    color: #fff;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.o100 {
+    opacity: 1.0 !important;
+}
+
+.o50 {
+    opacity: 0.3 !important;
+}

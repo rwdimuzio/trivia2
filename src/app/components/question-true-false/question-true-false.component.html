@@ -1,3 +1,20 @@
-<p>
-  question-true-false works!
-</p>
+<ion-badge color="warning" class="difficulty">
+  <ion-icon name="star"></ion-icon> 
+  <ion-icon *ngIf="question.difficulty!=='easy'"name="star"></ion-icon> 
+  <ion-icon *ngIf="question.difficulty==='hard'"name="star"></ion-icon>
+</ion-badge>
+<ion-badge color="success">  
+  <ion-icon *ngIf="question.state==CORRECT" name="star"></ion-icon>
+</ion-badge>
+<ion-badge color="danger">  
+  <ion-icon *ngIf="question.state==INCORRECT" name="sad"></ion-icon>  
+</ion-badge>
+<h1>{{question.category}}</h1>
+<ion-item  class="ion-no-padding">
+  <div  [innerHTML]="question.question">
+  </div>
+</ion-item>
+<ion-list *ngIf="question.type==='boolean'">
+    <ion-button class="{{selectTrueFalseIcon(question,'False')}}" (click)="guessTrueFalse(question,'False')"><ion-icon name="{{selectTrueFalseIcon(question,'False')}}" ></ion-icon>False</ion-button>
+    <ion-button class="{{selectTrueFalseIcon(question,'True')}}" (click)="guessTrueFalse(question,'True')"><ion-icon name="{{selectTrueFalseIcon(question,'True')}}" ></ion-icon>True</ion-button>
+</ion-list>

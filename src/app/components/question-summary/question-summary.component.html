@@ -1,3 +1,13 @@
-<p>
-  question-summary works!
-</p>
+<ion-card>
+  <div *ngFor="let question of questions" (click)="select(question)">
+    <div class='{{catCat(question)}} {{opaque(question)}}' >
+    <div>{{catCat(question)}}</div>
+    <div class="difficulty">
+      <ion-icon name="star"></ion-icon>
+      <ion-icon *ngIf="question?.difficulty!=='easy'" name="star"></ion-icon>
+      <ion-icon *ngIf="question?.difficulty==='hard'" name="star"></ion-icon>
+    </div>
+  </div>
+  </div>
+
+</ion-card>

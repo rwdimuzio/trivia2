@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameObject } from 'src/app/pages/game/game.page';
 
 @Component({
   selector: 'app-question-true-false',
@@ -12,7 +11,7 @@ export class QuestionTrueFalseComponent implements OnInit {
   CORRECT = 2;
   INCORRECT = 3;
 
-  @Input() public gameObject:GameObject;
+  @Input() public gameObject:any;
   @Input() public question:any;
 
   constructor() { }

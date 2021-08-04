@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameObject } from 'src/app/pages/game/game.page';
 
 @Component({
   selector: 'app-question-summary',
@@ -12,7 +11,7 @@ export class QuestionSummaryComponent implements OnInit {
   readonly CORRECT = 2;
   readonly INCORRECT = 3;
 
-  @Input() public gameObject:GameObject;
+  @Input() public gameObject:any;
   @Input() public questions:any[];
   readonly colors = {
     "G":"#90B2E5",

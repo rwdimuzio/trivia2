@@ -5,42 +5,42 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
+  <ion-list *ngIf="game">
     <ion-item>
       <ion-label>Rounds</ion-label>
-      <ion-select>
-          <ion-select-option>1</ion-select-option>
-          <ion-select-option>2</ion-select-option>
-          <ion-select-option>3</ion-select-option>
-          <ion-select-option>4</ion-select-option>
-          <ion-select-option>5</ion-select-option>
+      <ion-select [(ngModel)]="game.numRounds">
+          <ion-select-option value="1">1</ion-select-option>
+          <ion-select-option value="2">2</ion-select-option>
+          <ion-select-option value="3">3</ion-select-option>
+          <ion-select-option value="4">4</ion-select-option>
+          <ion-select-option value="5">5</ion-select-option>
       </ion-select>   
     </ion-item>  
 
     <ion-item>
       <ion-label>Question per Round</ion-label>
-      <ion-select>
-          <ion-select-option>8</ion-select-option>
-          <ion-select-option>12</ion-select-option>
-          <ion-select-option>16</ion-select-option>
+      <ion-select [(ngModel)]="game.numQuestions">
+        <ion-select-option value="8">8</ion-select-option>
+          <ion-select-option value="12">12</ion-select-option>
+          <ion-select-option value="16">16</ion-select-option>
       </ion-select>   
     </ion-item>  
 
     <ion-item>
       <ion-label position="stacked">Player 1</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="game.players[0].name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Player 2</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="game.players[1].name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Player 3</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="game.players[2].name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Player 4</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="game.players[3].name"></ion-input>
     </ion-item>
 
   </ion-list>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService, GamePlay } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-names',
@@ -8,18 +9,20 @@ import { Router } from '@angular/router';
 })
 export class NamesPage implements OnInit {
   loading=false;
-  constructor(private router:Router) { }
+  game:GamePlay;
+  constructor(private router:Router, private api:ApiService) { }
 
   ngOnInit() {
+    this.loadGame();
+  }
+  async loadGame(){
+    this.game = await this.api.getGame();
   }
 
-  next(){
+  async next(){
     this.loading = true;
-    var parent = this;
-    setTimeout(()=>{
-      this.loading=false;
-      this.router.navigate(['/game']);
-    },1000)
+    await this.api.populateGame();
+    this.router.navigate(['/game']);
   }
 
 }

@@ -16,14 +16,14 @@ export class GamePage implements OnInit {
   INCORRECT = QUESTION_STATE.INCORRECT;
 
   loading = false;
-  loaded=false;
+  loaded = false;
   noSources = false;
-  gameObject:any=null;
+  gameObject: any = null;
   questions: Array<any> = [];
-  gamePlayStateSubscription:any=null;
+  gamePlayStateSubscription: any = null;
   token = "";
 
-  constructor(private alertController:AlertController, private router:Router, private api:ApiService) { }
+  constructor(private alertController: AlertController, private router: Router, private api: ApiService) { }
 
   ngOnInit() {
   }
@@ -32,49 +32,49 @@ export class GamePage implements OnInit {
 
     this.gameObject = await this.api.getGame();
     this.questions = this.gameObject.rounds[this.gameObject.currentRound];
-    this.loaded=true;
+    this.loaded = true;
     this.api.gamePlayStateBehaviorSubject.subscribe({
       next: (state) => {
-        console.log("Observed",state, this.api.describeGameState(state));
+        console.log("Observed", state, this.api.describeGameState(state));
         this.handleStateChange(state);
       }
     })
   }
 
-  ionViewWillLeave(){
-    if(this.gamePlayStateSubscription!=null){
+  ionViewWillLeave() {
+    if (this.gamePlayStateSubscription != null) {
       this.gamePlayStateSubscription.unsubscribe();
-      this.gamePlayStateSubscription=null;
+      this.gamePlayStateSubscription = null;
     }
   }
-  async handleStateChange(state){
-    console.log("handle State Change: "+state+"  "+this.api.describeGameState(state));
-    switch(state){
-      case GAME_STATE.NEW_GAME: 
+  async handleStateChange(state) {
+    console.log("handle State Change: " + state + "  " + this.api.describeGameState(state));
+    switch (state) {
+      case GAME_STATE.NEW_GAME:
         this.router.navigate(['/start']);
         break;
-        case GAME_STATE.PLAYERS: 
+      case GAME_STATE.PLAYERS:
         this.router.navigate(['/names']);
         break;
-        case GAME_STATE.ROUND_BREAK: 
-          this.levelPause();
+      case GAME_STATE.ROUND_BREAK:
+        this.levelPause();
         break;
-        case GAME_STATE.GAME_OVER: 
-          this.endGame();
+      case GAME_STATE.GAME_OVER:
+        this.endGame();
         break;
     }
 
   }
 
-  loadNextRound(){
+  loadNextRound() {
 
   }
-  loadRound(){
+  loadRound() {
 
   }
 
-  async levelPause(){
-    var message="Summary blah blah blah";
+  async levelPause() {
+    var message = "Summary blah blah blah";
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Level Break',
@@ -89,8 +89,8 @@ export class GamePage implements OnInit {
     await this.api.nextRound();
   }
 
-  async endGame(){
-    var message="You won!";
+  async endGame() {
+    var message = "You won!";
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'GameOver',
@@ -102,8 +102,37 @@ export class GamePage implements OnInit {
     await alert.present();
 
     const { role } = await alert.onDidDismiss();
+    await this.api.endGame();
+
     console.log('onDidDismiss resolved with role', role);
     this.router.navigate(['/start']);
 
+  }
+  exitGame() {
+    this.router.navigate(['/start']);
+  }
+  gameState(): string {
+    var result = "";
+    switch (this.gameObject.gameState) {
+      //case GAME_STATE.NEW_GAME:
+      //case GAME_STATE.PLAYERS:
+      case GAME_STATE.SELECTING:
+        result = "Player "+(this.gameObject.playerIdx+1)+" select";
+        break;
+      case GAME_STATE.ANSWERING:
+        result = "Player "+(this.gameObject.playerIdx+1)+" answer";
+        break;
+      case GAME_STATE.ROUND_BREAK:
+        result = "Player "+(this.gameObject.playerIdx+1)+" answer";
+        break;
+      case GAME_STATE.GAME_ENDED:
+      case GAME_STATE.GAME_OVER:
+        result = "Game Over. " + '';
+        break;
+      default:
+        result = "[" + this.gameObject.gameState + "] Game what? ";
+    }
+
+    return result;
   }
 }

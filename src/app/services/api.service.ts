@@ -4,7 +4,6 @@ import { InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { CacheService } from "ionic-cache";
 import { BehaviorSubject } from 'rxjs';
 import { State } from '@angular-devkit/architect/src/progress-schema';
-import { RouterLinkWithHref } from '@angular/router';
 
 export enum QUESTION_STATE {
   UNANSWERED = 0,
@@ -18,7 +17,8 @@ export enum GAME_STATE {
   SELECTING = 2,
   ANSWERING = 3,
   ROUND_BREAK = 4,
-  GAME_OVER = 5
+  GAME_OVER = 5,
+  GAME_ENDED = 6
 };
 
 export class Player {
@@ -263,6 +263,9 @@ export class ApiService {
       }
     await this.saveGame();
   }
+  async endGame(){
+    this.setGameState(GAME_STATE.GAME_ENDED);
+  }
 
 
 
@@ -308,6 +311,7 @@ export class ApiService {
        case GAME_STATE.ANSWERING: return "ANSWERING";
        case GAME_STATE.ROUND_BREAK: return "ROUND_BREAK";
        case GAME_STATE.GAME_OVER: return "GAME_OVER";
+       case GAME_STATE.GAME_ENDED: return "GAME_ENDED";
        default:
          return "Unknown-"+State;
      };      

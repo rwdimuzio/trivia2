@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>game</ion-title>
+    <div slot="start">  
+      <img src='assets/icon/favicon.png' />
+    </div>
+    <div *ngIf="loaded">
+      {{gameState()}}
+    </div>
   </ion-toolbar>
 
 </ion-header>
@@ -11,16 +16,16 @@
     <app-question-summary [questions]='questions'></app-question-summary>
     <div *ngIf="gameObject.question!=''">
       <ion-card>
-        <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" 
-          [question]="gameObject.question"></app-question-multi-choice>
-        <app-question-true-false *ngIf="gameObject.question.type==='boolean'" 
-          [question]='gameObject.question'></app-question-true-false>
+        <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" [question]="gameObject.question">
+        </app-question-multi-choice>
+        <app-question-true-false *ngIf="gameObject.question.type==='boolean'" [question]='gameObject.question'>
+        </app-question-true-false>
       </ion-card>
     </div>
   </ion-list>
 </ion-content>
 
 <ion-footer>
-  <ion-button (click)="endGame()" color="light" expand="block">Exit
+  <ion-button (click)="exitGame()" color="light" expand="block">Exit
   </ion-button>
 </ion-footer>

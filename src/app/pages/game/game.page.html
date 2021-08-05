@@ -6,23 +6,21 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <app-question-summary [gameObject]='gameObject' [questions]='questions'></app-question-summary>
-    
+  <ion-item *ngIf="!loaded">Loading</ion-item>
+  <ion-list *ngIf="loaded">
+    <app-question-summary [questions]='questions'></app-question-summary>
     <div *ngIf="gameObject.question!=''">
       <ion-card>
-        <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" [gameObject]='gameObject'
+        <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" 
           [question]="gameObject.question"></app-question-multi-choice>
-        <app-question-true-false *ngIf="gameObject.question.type==='boolean'" [gameObject]='gameObject'
+        <app-question-true-false *ngIf="gameObject.question.type==='boolean'" 
           [question]='gameObject.question'></app-question-true-false>
       </ion-card>
     </div>
-  
   </ion-list>
 </ion-content>
 
 <ion-footer>
-  <ion-button (click)="endGame()" color="success" expand="block">
-    <ion-spinner *ngIf="loading"></ion-spinner>&nbsp;End Game
+  <ion-button (click)="endGame()" color="light" expand="block">Exit
   </ion-button>
 </ion-footer>

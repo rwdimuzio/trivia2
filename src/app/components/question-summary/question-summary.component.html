@@ -1,4 +1,5 @@
-<ion-card>
+<ion-item *ngIf="!loaded">Loading</ion-item>
+<ion-card *ngIf="loaded">
   <div *ngFor="let question of questions" (click)="select(question)">
     <div class='{{catCat(question)}} {{opaque(question)}}' >
     <div>{{catCat(question)}}</div>

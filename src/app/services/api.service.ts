@@ -2,45 +2,70 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { CacheService } from "ionic-cache";
+import { BehaviorSubject } from 'rxjs';
+import { State } from '@angular-devkit/architect/src/progress-schema';
+import { RouterLinkWithHref } from '@angular/router';
 
-export class GamePlay {
-  numQuestions: string = "12";
-  numRounds: string = "2";
-  players: Array<any> = [
-    { name: 'Rich', score: 0 },
-    { name: 'Sallie', score: 0 },
-    { name: '', score: 0 },
-    { name: '', score: 0 }
-  ];
-  rounds: Array<any> = new Array();
-  // game play
-  currentRound: number = 0;
-  playerIdx: number = 0;
-  question: any = '';
-
-  nextPlayer() {
-    this.playerIdx = ((this.playerIdx + 1) % this.players.length);
-  } 
-  answerGood(points){
-    console.log("answerGood");
-    this.players[this.playerIdx].score += points;
-    this.nextPlayer();
-  }
-  answerBad(){
-    console.log("answerBad");
-    this.nextPlayer();
-  }
-  currentPlayer(){
-    return this.players[this.playerIdx];
-  }
-
-}
 export enum QUESTION_STATE {
   UNANSWERED = 0,
   SELECTED = 1,
   CORRECT = 2,
   INCORRECT = 3
 };
+export enum GAME_STATE {
+  NEW_GAME = 0,
+  PLAYERS = 1,
+  SELECTING = 2,
+  ANSWERING = 3,
+  ROUND_BREAK = 4,
+  GAME_OVER = 5
+};
+
+export class Player {
+  name:string='';
+  score:number=0;
+  constructor(name){
+    this.name = name;
+    this.score = 0;
+  }
+}
+
+export class GamePlay {
+  numQuestions: string = "12";
+  numRounds: string = "2";
+  players: Array<Player> = new Array(
+    new Player('Sallie'),
+    new Player('Rich'),
+    new Player(''),
+    new Player(''),
+  );
+  rounds: Array<any> = new Array();
+  // game play
+  gameState:GAME_STATE = GAME_STATE.NEW_GAME;
+  currentRound: number = 0;
+  playerIdx: number = 0;
+  question: any = '';
+
+  public nextPlayer() {
+    this.playerIdx = ((this.playerIdx + 1) % this.players.length);
+  }
+
+  public answerGood(points){
+    console.log("answerGood");
+    this.players[this.playerIdx].score += points;
+    this.nextPlayer();
+  }
+
+  public answerBad(){
+    console.log("answerBad");
+    this.nextPlayer();
+  }
+
+  public currentPlayer(){
+    return this.players[this.playerIdx];
+  }
+
+}
 
 
 /*
@@ -76,6 +101,7 @@ export class ApiService {
     fullscreen: 'yes',//Windows only    
   };
   game: GamePlay = null;
+  gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME); // 0 is the initial value
 
   sources = [];
   retired = [];
@@ -118,6 +144,7 @@ export class ApiService {
       try {
         var g = await this.loadGame();
         this.game = g;
+        console.log("getGame load from memory",this.game);
       } catch (err) {
         console.log("getGame cache load failed");
         this.game = new GamePlay();
@@ -126,6 +153,7 @@ export class ApiService {
     } else {
       console.log("getGame local object", this.game);
     }
+    this.gamePlayStateBehaviorSubject.next(this.game.gameState);
     return this.game;
   }
   async saveGame() {
@@ -141,7 +169,7 @@ export class ApiService {
     // get token 
     var token = await this.getToken();
     console.log("Yer token", token);
-    while (this.game.rounds, length) this.game.rounds.pop();
+    while (this.game.rounds.length) this.game.rounds.pop();
 
     for (var i = 0; i < numRounds; i++) {
       var round = new Array();
@@ -153,7 +181,7 @@ export class ApiService {
           }
           element.state = QUESTION_STATE.UNANSWERED;
           element.answer = '';
-          console.log(element);
+          //console.log(element);
           round.push(element);
         });
         this.game.rounds.push(round);
@@ -161,11 +189,12 @@ export class ApiService {
         console.log("epic fail");
       }
     }
+    var list=Array();
     this.game.players[0].score=0;
     this.game.players[1].score=0;
     this.game.players[2].score=0;
     this.game.players[3].score=0;
-    await this.saveGame();
+    await this.setGameState(GAME_STATE.SELECTING); // and save
   }
 
   mergeQandA(questions, answer) {
@@ -178,6 +207,67 @@ export class ApiService {
     return list.sort(() => Math.random() - 0.5);
   }
 
+  async  nextPlayer() {
+    var nextState;
+    // count remaining questions in round
+    var numLeft = this.game.rounds[this.game.currentRound].filter( r => r.state==0).length;
+    console.log("Num Left: "+numLeft);
+    if(numLeft<=0){
+      if( (this.game.currentRound+1) > Number.parseInt(this.game.numRounds)){
+        nextState = GAME_STATE.GAME_OVER; // leave this out if you want to pause for a round break before the end
+      } else {
+        nextState = GAME_STATE.ROUND_BREAK;
+      } 
+    } else {
+      nextState = GAME_STATE.SELECTING;
+    }
+    this.game.playerIdx = ((this.game.playerIdx + 1) % this.game.players.length);
+    await this.setGameState(nextState); // and save
+  }
+
+  async  nextRound() {
+    var nextState;
+    if( (this.game.currentRound+1) >= Number.parseInt(this.game.numRounds)){
+      nextState = GAME_STATE.GAME_OVER;
+    } else {
+      this.game.currentRound = this.game.currentRound + 1;
+      this.game.playerIdx = 0;
+      nextState = GAME_STATE.SELECTING;
+    }
+    await this.setGameState(nextState); // and save
+  }
+
+
+  async answerGood(points){
+    console.log("answerGood");
+    this.game.players[this.game.playerIdx].score += points;
+    await this.nextPlayer(); // and save
+  }
+
+  async answerBad(){
+    console.log("answerBad");
+    this.nextPlayer(); // and save
+  }
+
+  async selectQuestion(question:any){
+    console.log("selectQuestion", this.game);
+    this.game.question = question;
+    await this.setGameState(GAME_STATE.ANSWERING); // and save
+  }
+
+  async setGameState(newState:GAME_STATE){
+    if(this.game.gameState !- newState){
+      console.log("setGameState to ", this.describeGameState(newState));
+      this.gamePlayStateBehaviorSubject.next(newState);
+        this.game.gameState = newState;
+      }
+    await this.saveGame();
+  }
+
+
+
+
+ 
 
   // TODO consider moving this
 
@@ -187,25 +277,40 @@ export class ApiService {
 
   async settingsProvider_setValue(key: string, value: any) {
     let jsonObj = JSON.stringify(value);
-    console.log("setValue: " + key + " ->" + jsonObj);
+    //console.log("setValue: " + key + " ->" + jsonObj);
     return this.cache.saveItem(key, jsonObj, this.SETTINGS_GROUP, this.SETTINGS_TTL);
   }
 
   settingsProvider_getValue(key: string): Promise<any> {
     return this.cache.getItem(key).then(res => {
-      console.log('getValue');
-      console.log(res);
+      //console.log('getValue',res);
       return JSON.parse(res);
     });
   }
 
-  clearSettings(): Promise<any> {
-    return this.cache.clearGroup(this.SETTINGS_GROUP);
+  async clearSettings(): Promise<any> {
+    this.game = new GamePlay();
+    //while(this.game.rounds.length) this.game.rounds.pop();
+    //this.game.playerIdx=0;
+    //this.game.question='';
+    return this.saveGame();
   }
 
 
   // -------------------------------------------------------------------
   //  helpers
   // -------------------------------------------------------------------
+  describeGameState(state:GAME_STATE) :string {
+    switch(state){
+       case GAME_STATE.NEW_GAME: return "NEW-GAME";
+       case GAME_STATE.PLAYERS: return "PLAYERS";
+       case GAME_STATE.SELECTING: return "SELECTING";
+       case GAME_STATE.ANSWERING: return "ANSWERING";
+       case GAME_STATE.ROUND_BREAK: return "ROUND_BREAK";
+       case GAME_STATE.GAME_OVER: return "GAME_OVER";
+       default:
+         return "Unknown-"+State;
+     };      
+ }
 
 }

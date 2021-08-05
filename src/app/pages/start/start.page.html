@@ -8,10 +8,12 @@
 
   <br />
   <br />
-  <br />
-  <ion-button [routerLink]="['/names']" expand="block" color="success">Start</ion-button>
-  <br />
+  <ion-button (click)="goName()"  expand="block" color="success">Start</ion-button>
   <br />
   <br />
   <ion-button [routerLink]="['/game']"expand="block" color="warning">Resume</ion-button>
+  <br />
+  <br />
+  <ion-button (click)="resetIt()">Trippin</ion-button>
+
 </ion-content>

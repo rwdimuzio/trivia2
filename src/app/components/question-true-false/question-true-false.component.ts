@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-question-true-false',
@@ -11,21 +12,29 @@ export class QuestionTrueFalseComponent implements OnInit {
   CORRECT = 2;
   INCORRECT = 3;
 
-  @Input() public gameObject:any;
+  loaded=false;
+  gameObject:any;
   @Input() public question:any;
 
-  constructor() { }
+  constructor(private api:ApiService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.load();
+  }
+  async load() {
+
+    this.gameObject = await this.api.getGame();
+    this.loaded=true;
+  }
 
   guessTrueFalse(question,answer){
     if(question.answer!=""){return; }
     question.answer=answer;
     question.state=(question.answer===question.correct_answer)?this.CORRECT:this.INCORRECT;
     if(question.state==this.CORRECT){
-        this.gameObject.answerGood(100);
+        this.api.answerGood(100);
     } else {
-        this.gameObject.answerBad();
+        this.api.answerBad();
     }
   }
 

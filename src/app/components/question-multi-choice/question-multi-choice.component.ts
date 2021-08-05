@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-question-multi-choice',
@@ -11,36 +12,44 @@ export class QuestionMultiChoiceComponent implements OnInit {
   CORRECT = 2;
   INCORRECT = 3;
 
- @Input() public gameObject:any;
-  @Input() public question:any;
+  public gameObject: any;
+  @Input() public question: any;
+  loaded = false;
 
-  constructor() { }
+  constructor(private api: ApiService) { }
 
-  ngOnInit() {}
-
-  guess(question,answer){
-    if(question.answer!=""){return; }
-    question.answer=answer;
-    question.state=(question.answer===question.correct_answer)?this.CORRECT:this.INCORRECT;
-    if(question.state==this.CORRECT){
-      this.gameObject.answerGood(100);
-  } else {
-      this.gameObject.answerBad();
+  ngOnInit() {
+    this.load();
   }
 
+  async load() {
+    this.gameObject = await this.api.getGame();
+    this.loaded = true;
   }
-  
-  selectQuestionIcon(question,answer){
-    var result="noicon";
-    if(question.answer==""){
-      result="noicon"; // no guesses yet
+
+
+  guess(question, answer) {
+    if (question.answer != "") { return; }
+    question.answer = answer;
+    question.state = (question.answer === question.correct_answer) ? this.CORRECT : this.INCORRECT;
+    if (question.state == this.CORRECT) {
+      this.api.answerGood(100);
     } else {
-      if(question.correct_answer == answer && question.answer == answer){
-          result="happy";
-      } else if(question.correct_answer== answer){
-          result = "star";
-      } else if(answer==question.answer){
-        result="sad";
+      this.api.answerBad();
+    }
+  }
+
+  selectQuestionIcon(question, answer) {
+    var result = "noicon";
+    if (question.answer == "") {
+      result = "noicon"; // no guesses yet
+    } else {
+      if (question.correct_answer == answer && question.answer == answer) {
+        result = "happy";
+      } else if (question.correct_answer == answer) {
+        result = "star";
+      } else if (answer == question.answer) {
+        result = "sad";
       }
     }
     return result;

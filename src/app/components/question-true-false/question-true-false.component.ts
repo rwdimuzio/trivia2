@@ -46,7 +46,7 @@ export class QuestionTrueFalseComponent implements OnInit {
       if(question.correct_answer == answer && question.answer == answer){
           result="happy";
       } else if(answer==question.answer){
-        result="sad";
+        result="close";
       }
     }
     return result;

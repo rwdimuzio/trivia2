@@ -33,7 +33,7 @@ export class GamePage implements OnInit {
     this.gameObject = await this.api.getGame();
     this.questions = this.gameObject.rounds[this.gameObject.currentRound];
     this.loaded = true;
-    this.api.gamePlayStateBehaviorSubject.subscribe({
+    this.gamePlayStateSubscription = this.api.gamePlayStateBehaviorSubject.subscribe({
       next: (state) => {
         console.log("Observed", state, this.api.describeGameState(state));
         this.handleStateChange(state);
@@ -48,6 +48,8 @@ export class GamePage implements OnInit {
     }
   }
   async handleStateChange(state) {
+    this.questions = this.gameObject.rounds[this.gameObject.currentRound];
+
     console.log("handle State Change: " + state + "  " + this.api.describeGameState(state));
     switch (state) {
       case GAME_STATE.NEW_GAME:
@@ -111,23 +113,24 @@ export class GamePage implements OnInit {
   exitGame() {
     this.router.navigate(['/start']);
   }
+
   gameState(): string {
     var result = "";
     switch (this.gameObject.gameState) {
       //case GAME_STATE.NEW_GAME:
       //case GAME_STATE.PLAYERS:
       case GAME_STATE.SELECTING:
-        result = "Player "+(this.gameObject.playerIdx+1)+" select";
+        result = "Team: "+this.api.currentPlayer().name+" select";
         break;
       case GAME_STATE.ANSWERING:
-        result = "Player "+(this.gameObject.playerIdx+1)+" answer";
+        result = "Team: "+this.api.currentPlayer().name+" answer";
         break;
       case GAME_STATE.ROUND_BREAK:
-        result = "Player "+(this.gameObject.playerIdx+1)+" answer";
+        result = "Team: "+this.api.currentPlayer().name+" answer";
         break;
       case GAME_STATE.GAME_ENDED:
       case GAME_STATE.GAME_OVER:
-        result = "Game Over. " + '';
+        result = "Game Over. " + 'Winner:'+this.api.whoHasHighScore()+" score: "+this.api.getHighScore();
         break;
       default:
         result = "[" + this.gameObject.gameState + "] Game what? ";

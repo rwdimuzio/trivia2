@@ -7,7 +7,6 @@
       {{gameState()}}
     </div>
   </ion-toolbar>
-
 </ion-header>
 
 <ion-content>
@@ -15,12 +14,12 @@
   <ion-list *ngIf="loaded">
     <app-question-summary [questions]='questions'></app-question-summary>
     <div *ngIf="gameObject.question!=''">
-      <ion-card>
+      <div style="width: 90%; margin: auto;">
         <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" [question]="gameObject.question">
         </app-question-multi-choice>
         <app-question-true-false *ngIf="gameObject.question.type==='boolean'" [question]='gameObject.question'>
         </app-question-true-false>
-      </ion-card>
+      </div>
     </div>
   </ion-list>
 </ion-content>

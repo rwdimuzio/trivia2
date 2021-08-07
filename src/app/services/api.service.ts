@@ -22,11 +22,15 @@ export enum GAME_STATE {
 };
 
 export class Player {
-  name:string='';
-  score:number=0;
-  constructor(name){
+  name: string = '';
+  score: number = 0;
+  correct: number = 0;
+  incorrect: number = 0;
+  constructor(name) {
     this.name = name;
     this.score = 0;
+    this.correct = 0;
+    this.incorrect = 0;
   }
 }
 
@@ -41,7 +45,7 @@ export class GamePlay {
   );
   rounds: Array<any> = new Array();
   // game play
-  gameState:GAME_STATE = GAME_STATE.NEW_GAME;
+  gameState: GAME_STATE = GAME_STATE.NEW_GAME;
   currentRound: number = 0;
   playerIdx: number = 0;
   question: any = '';
@@ -50,18 +54,18 @@ export class GamePlay {
     this.playerIdx = ((this.playerIdx + 1) % this.players.length);
   }
 
-  public answerGood(points){
+  public answerGood(points) {
     console.log("answerGood");
     this.players[this.playerIdx].score += points;
     this.nextPlayer();
   }
 
-  public answerBad(){
+  public answerBad() {
     console.log("answerBad");
     this.nextPlayer();
   }
 
-  public currentPlayer(){
+  public currentPlayer() {
     return this.players[this.playerIdx];
   }
 
@@ -103,18 +107,13 @@ export class ApiService {
   game: GamePlay = null;
   gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME); // 0 is the initial value
 
-  sources = [];
-  retired = [];
-  filteredSoources = [];
-
   token = "";
 
   //  https://opentdb.com/api_token.php?command=request
 
   GROUP_KEY = 'triviality-group';
   ttl = 60 * 15; // 15 miuntes  to live
-  apiUrl: String = "https://newsapi.org";
-  apiKey: String = "891936083b324696939b66d8afa0b3fc";
+
   constructor(public http: HttpClient, private cache: CacheService) {
 
   }
@@ -144,7 +143,7 @@ export class ApiService {
       try {
         var g = await this.loadGame();
         this.game = g;
-        console.log("getGame load from memory",this.game);
+        console.log("getGame load from memory", this.game);
       } catch (err) {
         console.log("getGame cache load failed");
         this.game = new GamePlay();
@@ -163,37 +162,55 @@ export class ApiService {
     return this.settingsProvider_getValue("game");
   }
 
-  async populateGame() {
-    var numRounds = Number.parseInt(this.game.numRounds);
-    var numQuestions = Number.parseInt(this.game.numQuestions);
-    // get token 
-    var token = await this.getToken();
-    console.log("Yer token", token);
-    while (this.game.rounds.length) this.game.rounds.pop();
-
-    for (var i = 0; i < numRounds; i++) {
-      var round = new Array();
-      var qs = await this.getQuestions(token, numQuestions);
-      if (qs.response_code === 0) {
-        qs.results.forEach(element => {
-          if (element.type === 'multiple') {
-            element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
-          }
-          element.state = QUESTION_STATE.UNANSWERED;
-          element.answer = '';
-          //console.log(element);
-          round.push(element);
-        });
-        this.game.rounds.push(round);
-      } else {
-        console.log("epic fail");
+  async populateGame(playerlist: Array<String>) {
+    while (this.game.players.length) this.game.players.pop();
+    playerlist.forEach(name => {
+      if (name != '') {
+        this.game.players.push(new Player(name));
       }
+    })
+
+    /* TODO PUT ME BACK
+        var numRounds = Number.parseInt(this.game.numRounds);
+        var numQuestions = Number.parseInt(this.game.numQuestions);
+        // get token 
+        var token = await this.getToken();
+        console.log("Yer token", token);
+        while (this.game.rounds.length) this.game.rounds.pop();
+    
+        for (var i = 0; i < numRounds; i++) {
+          var round = new Array();
+          var qs = await this.getQuestions(token, numQuestions);
+          if (qs.response_code === 0) {
+            qs.results.forEach(element => {
+              if (element.type === 'multiple') {
+                element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
+              }
+              element.state = QUESTION_STATE.UNANSWERED;
+              element.answer = '';
+              //console.log(element);
+              round.push(element);
+            });
+            this.game.rounds.push(round);
+          } else {
+            console.log("epic fail");
+          }
+        }
+        */
+    await this.setGameState(GAME_STATE.SELECTING); // and save
+  }
+  async restartGame() {
+    for (var i in this.game.rounds) {
+      var round = this.game.rounds[i];
+      round.forEach(q => {
+        q.state = QUESTION_STATE.UNANSWERED;
+        q.answer = '';
+      })
     }
-    var list=Array();
-    this.game.players[0].score=0;
-    this.game.players[1].score=0;
-    this.game.players[2].score=0;
-    this.game.players[3].score=0;
+    this.game.question = '';
+    this.game.players.forEach(r => { r.score = 0; });
+    this.game.playerIdx = 0;
+    this.game.currentRound = 0;
     await this.setGameState(GAME_STATE.SELECTING); // and save
   }
 
@@ -207,17 +224,20 @@ export class ApiService {
     return list.sort(() => Math.random() - 0.5);
   }
 
-  async  nextPlayer() {
+  public currentPlayer() {
+    return this.game.players[this.game.playerIdx];
+  }
+  async nextPlayer() {
     var nextState;
     // count remaining questions in round
-    var numLeft = this.game.rounds[this.game.currentRound].filter( r => r.state==0).length;
-    console.log("Num Left: "+numLeft);
-    if(numLeft<=0){
-      if( (this.game.currentRound+1) > Number.parseInt(this.game.numRounds)){
+    var numLeft = this.game.rounds[this.game.currentRound].filter(r => r.state == 0).length;
+    console.log("Num Left: " + numLeft);
+    if (numLeft <= 0) {
+      if ((this.game.currentRound + 1) >= Number.parseInt(this.game.numRounds)) {
         nextState = GAME_STATE.GAME_OVER; // leave this out if you want to pause for a round break before the end
       } else {
         nextState = GAME_STATE.ROUND_BREAK;
-      } 
+      }
     } else {
       nextState = GAME_STATE.SELECTING;
     }
@@ -225,9 +245,9 @@ export class ApiService {
     await this.setGameState(nextState); // and save
   }
 
-  async  nextRound() {
+  async nextRound() {
     var nextState;
-    if( (this.game.currentRound+1) >= Number.parseInt(this.game.numRounds)){
+    if ((this.game.currentRound + 1) >= Number.parseInt(this.game.numRounds)) {
       nextState = GAME_STATE.GAME_OVER;
     } else {
       this.game.currentRound = this.game.currentRound + 1;
@@ -238,39 +258,53 @@ export class ApiService {
   }
 
 
-  async answerGood(points){
+  async answerGood(points) {
     console.log("answerGood");
     this.game.players[this.game.playerIdx].score += points;
+    this.game.players[this.game.playerIdx].correct++;
     await this.nextPlayer(); // and save
   }
 
-  async answerBad(){
+  async answerBad() {
     console.log("answerBad");
+    this.game.players[this.game.playerIdx].incorrect++;
     this.nextPlayer(); // and save
   }
 
-  async selectQuestion(question:any){
+  async selectQuestion(question: any) {
     console.log("selectQuestion", this.game);
     this.game.question = question;
     await this.setGameState(GAME_STATE.ANSWERING); // and save
   }
 
-  async setGameState(newState:GAME_STATE){
-    if(this.game.gameState !- newState){
+  async setGameState(newState: GAME_STATE) {
+    if (this.game.gameState! - newState) {
       console.log("setGameState to ", this.describeGameState(newState));
       this.gamePlayStateBehaviorSubject.next(newState);
-        this.game.gameState = newState;
-      }
+      this.game.gameState = newState;
+    }
     await this.saveGame();
   }
-  async endGame(){
+  async endGame() {
     this.setGameState(GAME_STATE.GAME_ENDED);
   }
 
+  getHighScore():number{
+    var highScore=0;
+    this.game.players.forEach( p => {if(p.score>highScore){highScore = p.score}});
+    return highScore;
+  }
+  whoHasHighScore():string{
+    var highScore=this.getHighScore();
+    var winner='';
+    this.game.players.forEach( p => { if(p.score>=highScore) winner +=', '+p.name});
+
+    return winner.substr(2);
+  }
 
 
 
- 
+
 
   // TODO consider moving this
 
@@ -303,18 +337,18 @@ export class ApiService {
   // -------------------------------------------------------------------
   //  helpers
   // -------------------------------------------------------------------
-  describeGameState(state:GAME_STATE) :string {
-    switch(state){
-       case GAME_STATE.NEW_GAME: return "NEW-GAME";
-       case GAME_STATE.PLAYERS: return "PLAYERS";
-       case GAME_STATE.SELECTING: return "SELECTING";
-       case GAME_STATE.ANSWERING: return "ANSWERING";
-       case GAME_STATE.ROUND_BREAK: return "ROUND_BREAK";
-       case GAME_STATE.GAME_OVER: return "GAME_OVER";
-       case GAME_STATE.GAME_ENDED: return "GAME_ENDED";
-       default:
-         return "Unknown-"+State;
-     };      
- }
+  describeGameState(state: GAME_STATE): string {
+    switch (state) {
+      case GAME_STATE.NEW_GAME: return "NEW-GAME";
+      case GAME_STATE.PLAYERS: return "PLAYERS";
+      case GAME_STATE.SELECTING: return "SELECTING";
+      case GAME_STATE.ANSWERING: return "ANSWERING";
+      case GAME_STATE.ROUND_BREAK: return "ROUND_BREAK";
+      case GAME_STATE.GAME_OVER: return "GAME_OVER";
+      case GAME_STATE.GAME_ENDED: return "GAME_ENDED";
+      default:
+        return "Unknown-" + State;
+    };
+  }
 
 }

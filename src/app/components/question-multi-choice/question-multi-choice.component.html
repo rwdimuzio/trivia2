@@ -1,14 +1,3 @@
-<ion-badge color="warning" class="difficulty">
-  <ion-icon name="star"></ion-icon> 
-  <ion-icon *ngIf="question?.difficulty!=='easy'"name="star"></ion-icon> 
-  <ion-icon *ngIf="question?.difficulty==='hard'"name="star"></ion-icon>
-</ion-badge>
-<ion-badge color="success">  
-  <ion-icon *ngIf="question?.state==CORRECT" name="star"></ion-icon>
-</ion-badge>
-<ion-badge color="danger">  
-  <ion-icon *ngIf="question?.state==INCORRECT" name="sad"></ion-icon>  
-</ion-badge>
 <h1>{{question?.category}}</h1>
 <ion-item  class="ion-no-padding">
   <div  [innerHTML]="question.question">

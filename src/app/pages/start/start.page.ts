@@ -29,4 +29,9 @@ export class StartPage implements OnInit {
       window.location.reload();
     });
   }
+  async restartIt() { 
+    await this.api.restartGame();
+    this.router.navigate(['/game']);
+  }
+
 }

@@ -170,33 +170,31 @@ export class ApiService {
       }
     })
 
-    /* TODO PUT ME BACK
-        var numRounds = Number.parseInt(this.game.numRounds);
-        var numQuestions = Number.parseInt(this.game.numQuestions);
-        // get token 
-        var token = await this.getToken();
-        console.log("Yer token", token);
-        while (this.game.rounds.length) this.game.rounds.pop();
-    
-        for (var i = 0; i < numRounds; i++) {
-          var round = new Array();
-          var qs = await this.getQuestions(token, numQuestions);
-          if (qs.response_code === 0) {
-            qs.results.forEach(element => {
-              if (element.type === 'multiple') {
-                element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
-              }
-              element.state = QUESTION_STATE.UNANSWERED;
-              element.answer = '';
-              //console.log(element);
-              round.push(element);
-            });
-            this.game.rounds.push(round);
-          } else {
-            console.log("epic fail");
+    var numRounds = Number.parseInt(this.game.numRounds);
+    var numQuestions = Number.parseInt(this.game.numQuestions);
+    // get token 
+    var token = await this.getToken();
+    console.log("Yer token", token);
+    while (this.game.rounds.length) this.game.rounds.pop();
+
+    for (var i = 0; i < numRounds; i++) {
+      var round = new Array();
+      var qs = await this.getQuestions(token, numQuestions);
+      if (qs.response_code === 0) {
+        qs.results.forEach(element => {
+          if (element.type === 'multiple') {
+            element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
           }
-        }
-        */
+          element.state = QUESTION_STATE.UNANSWERED;
+          element.answer = '';
+          //console.log(element);
+          round.push(element);
+        });
+        this.game.rounds.push(round);
+      } else {
+        console.log("epic fail");
+      }
+    }
     await this.setGameState(GAME_STATE.SELECTING); // and save
   }
   async restartGame() {
@@ -289,15 +287,15 @@ export class ApiService {
     this.setGameState(GAME_STATE.GAME_ENDED);
   }
 
-  getHighScore():number{
-    var highScore=0;
-    this.game.players.forEach( p => {if(p.score>highScore){highScore = p.score}});
+  getHighScore(): number {
+    var highScore = 0;
+    this.game.players.forEach(p => { if (p.score > highScore) { highScore = p.score } });
     return highScore;
   }
-  whoHasHighScore():string{
-    var highScore=this.getHighScore();
-    var winner='';
-    this.game.players.forEach( p => { if(p.score>=highScore) winner +=', '+p.name});
+  whoHasHighScore(): string {
+    var highScore = this.getHighScore();
+    var winner = '';
+    this.game.players.forEach(p => { if (p.score >= highScore) winner += ', ' + p.name });
 
     return winner.substr(2);
   }

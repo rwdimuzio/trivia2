@@ -114,23 +114,37 @@ export class GamePage implements OnInit {
     this.router.navigate(['/start']);
   }
 
+  currentPlayer(){
+      var result = "";
+      switch (this.gameObject.gameState) {
+        case GAME_STATE.GAME_ENDED:
+        case GAME_STATE.GAME_OVER:
+          result = this.api.whoHasHighScore();
+          break;
+        
+        default:
+          result = "Winner: "+this.api.currentPlayer().name;
+        }
+      return result;
+  
+  }
   gameState(): string {
     var result = "";
     switch (this.gameObject.gameState) {
       //case GAME_STATE.NEW_GAME:
       //case GAME_STATE.PLAYERS:
       case GAME_STATE.SELECTING:
-        result = "Team: "+this.api.currentPlayer().name+" select";
+        result = "Select";
         break;
       case GAME_STATE.ANSWERING:
-        result = "Team: "+this.api.currentPlayer().name+" answer";
+        result = "Answer";
         break;
       case GAME_STATE.ROUND_BREAK:
-        result = "Team: "+this.api.currentPlayer().name+" answer";
+        result = "Answer";
         break;
       case GAME_STATE.GAME_ENDED:
       case GAME_STATE.GAME_OVER:
-        result = "Game Over. " + 'Winner:'+this.api.whoHasHighScore()+" score: "+this.api.getHighScore();
+        result = "Score: "+this.api.getHighScore();
         break;
       default:
         result = "[" + this.gameObject.gameState + "] Game what? ";

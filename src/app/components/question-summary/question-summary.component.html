@@ -1,14 +1,14 @@
 <ion-item *ngIf="!loaded">Loading</ion-item>
-<ion-card *ngIf="loaded">
+<div *ngIf="loaded" class="anchor">
   <div *ngFor="let question of questions" (click)="select(question)">
     <div class='{{catCat(question)}} {{opaque(question)}}' >
+      <ion-icon *ngIf="question.type=='boolean'" name="checkmark" class="difficulty" style="float: left"></ion-icon>
     <div>{{catCat(question)}}</div>
     <div class="difficulty">
       <ion-icon name="star"></ion-icon>
-      <ion-icon *ngIf="question?.difficulty!=='easy'" name="star"></ion-icon>
-      <ion-icon *ngIf="question?.difficulty==='hard'" name="star"></ion-icon>
+      <ion-icon *ngIf="true || question?.difficulty!=='easy'" name="star"></ion-icon>
+      <ion-icon *ngIf="true || question?.difficulty==='hard'" name="star"></ion-icon>
     </div>
   </div>
   </div>
-
-</ion-card>
+</div>

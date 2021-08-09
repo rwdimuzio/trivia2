@@ -27,7 +27,7 @@ export class NamesPage implements OnInit {
 
   async next(){
     this.loading = true;
-    await this.api.populateGame(['billy','bubba', 'pete']);
+    await this.api.populateGame(this.players);
     this.router.navigate(['/game']);
   }
 

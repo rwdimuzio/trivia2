@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <div slot="start" style="padding-right: 20px">  
+    <div slot="start" style="padding-right: 20px" (click)="exitGame()">
       <img src='assets/icon/favicon.png' />
     </div>
     <div *ngIf="loaded">
@@ -16,7 +16,7 @@
 
 <ion-content>
   <ion-item *ngIf="!loaded">Loading</ion-item>
-  <ion-list *ngIf="loaded">
+  <ion-list *ngIf="loaded && !showsummary">
     <app-question-summary [questions]='questions'></app-question-summary>
     <div *ngIf="gameObject.question!=''">
       <div style="width: 90%; margin: auto;">
@@ -27,9 +27,55 @@
       </div>
     </div>
   </ion-list>
+  <ion-list *ngIf="loaded && showsummary">
+    <ion-card>
+      <ion-grid>
+        <ion-row class="header">
+          <ion-col size="6">
+            &nbsp;
+          </ion-col>
+          <ion-col>
+            <ion-icon name="close"></ion-icon>
+          </ion-col>
+          <ion-col>
+            <ion-icon name="checkmark"></ion-icon>
+          </ion-col>
+          <ion-col>
+            <ion-icon name="thumbs-up"></ion-icon>
+          </ion-col>
+          <ion-col>
+            Score
+          </ion-col>
+        </ion-row>
+        </ion-grid>
+    </ion-card>
+    <ion-card>
+      <ion-grid>
+      <ion-row *ngFor="let player of gameObject.players">
+        <ion-col size="6">
+          <ion-icon name='person'></ion-icon> {{player.name}}
+        </ion-col>
+        <ion-col>
+          {{player.incorrect}}
+        </ion-col>
+        <ion-col>
+          {{player.correct}}
+        </ion-col>
+        <ion-col>{{computeScorePct(player)}}
+        </ion-col>
+        <ion-col>
+          {{player.score}}
+        </ion-col>
+      </ion-row>
+      </ion-grid>
+    </ion-card>
+  </ion-list>
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button color='light' *ngIf='!showsummary' (click)="toggleSummary()">
+      <ion-icon name="person"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button color='light' *ngIf='showsummary' (click)="toggleSummary()">
+      <ion-icon name="list"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
-
-<ion-footer>
-  <ion-button (click)="exitGame()" color="light" expand="block">Exit
-  </ion-button>
-</ion-footer>

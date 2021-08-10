@@ -1,0 +1,22 @@
+
+
+ion-col {
+    background-color: transparent;
+}
+
+ion-row {
+    
+    padding-top: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    color: #000;
+}
+ion-row:nth-child(odd) {
+    background-color: rgb(230, 238, 248);
+}
+
+ion-row.header {
+    background-color: #fff;
+    color: #444;
+    font-weight: bold;
+}

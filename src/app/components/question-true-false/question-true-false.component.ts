@@ -32,7 +32,7 @@ export class QuestionTrueFalseComponent implements OnInit {
     question.answer=answer;
     question.state=(question.answer===question.correct_answer)?this.CORRECT:this.INCORRECT;
     if(question.state==this.CORRECT){
-        this.api.answerGood(100);
+        this.api.answerGood(question);
     } else {
         this.api.answerBad();
     }

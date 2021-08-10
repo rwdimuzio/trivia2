@@ -15,6 +15,7 @@ export class GamePage implements OnInit {
   CORRECT = QUESTION_STATE.SELECTED;
   INCORRECT = QUESTION_STATE.INCORRECT;
 
+  showsummary = false;
   loading = false;
   loaded = false;
   noSources = false;
@@ -33,6 +34,7 @@ export class GamePage implements OnInit {
     this.gameObject = await this.api.getGame();
     this.questions = this.gameObject.rounds[this.gameObject.currentRound];
     this.loaded = true;
+    console.log("Observing");
     this.gamePlayStateSubscription = this.api.gamePlayStateBehaviorSubject.subscribe({
       next: (state) => {
         console.log("Observed", state, this.api.describeGameState(state));
@@ -43,6 +45,7 @@ export class GamePage implements OnInit {
 
   ionViewWillLeave() {
     if (this.gamePlayStateSubscription != null) {
+      console.log("Remove obserer");
       this.gamePlayStateSubscription.unsubscribe();
       this.gamePlayStateSubscription = null;
     }
@@ -76,12 +79,11 @@ export class GamePage implements OnInit {
   }
 
   async levelPause() {
-    var message = "Summary blah blah blah";
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Level Break',
-      subHeader: '',
-      message: message,
+      subHeader: 'Leader: ' + this.api.whoHasHighScore(),
+      message: 'Score: ' + this.api.getHighScore(),
       buttons: ['OK']
     });
 
@@ -92,12 +94,11 @@ export class GamePage implements OnInit {
   }
 
   async endGame() {
-    var message = "You won!";
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'GameOver',
-      subHeader: '',
-      message: message,
+      subHeader: 'Leader: ' + this.api.whoHasHighScore(),
+      message: 'Score: ' + this.api.getHighScore(),
       buttons: ['OK']
     });
 
@@ -114,19 +115,19 @@ export class GamePage implements OnInit {
     this.router.navigate(['/start']);
   }
 
-  currentPlayer(){
-      var result = "";
-      switch (this.gameObject.gameState) {
-        case GAME_STATE.GAME_ENDED:
-        case GAME_STATE.GAME_OVER:
-          result = this.api.whoHasHighScore();
-          break;
-        
-        default:
-          result = "Winner: "+this.api.currentPlayer().name;
-        }
-      return result;
-  
+  currentPlayer() {
+    var result = "";
+    switch (this.gameObject.gameState) {
+      case GAME_STATE.GAME_ENDED:
+      case GAME_STATE.GAME_OVER:
+        result = "Winner: " + this.api.whoHasHighScore();
+        break;
+
+      default:
+        result = this.api.currentPlayer().name;
+    }
+    return result;
+
   }
   gameState(): string {
     var result = "";
@@ -144,12 +145,24 @@ export class GamePage implements OnInit {
         break;
       case GAME_STATE.GAME_ENDED:
       case GAME_STATE.GAME_OVER:
-        result = "Score: "+this.api.getHighScore();
+        result = "Score: " + this.api.getHighScore();
         break;
       default:
         result = "[" + this.gameObject.gameState + "] Game what? ";
     }
 
+    return result;
+  }
+
+  toggleSummary() {
+    this.showsummary = this.showsummary ? false : true
+  }
+
+  computeScorePct(player) {
+    var result = '0%'
+    if (player.correct + player.incorrect != 0) {
+      result = '' + Math.round(player.correct * 100 / (player.correct + player.incorrect))+'%';
+    }
     return result;
   }
 }

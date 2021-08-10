@@ -54,9 +54,22 @@ export class GamePlay {
     this.playerIdx = ((this.playerIdx + 1) % this.players.length);
   }
 
-  public answerGood(points) {
+  protected computePoints(question) {
+    var result = 0;
+    if (question.type == "boolean") {
+      switch (question.difficulty) {
+        case "hard":
+          break;
+      }
+
+    } else {
+
+    }
+    return result;
+  }
+  public answerGood(question) {
     console.log("answerGood");
-    this.players[this.playerIdx].score += points;
+    this.players[this.playerIdx].score += this.computePoints(question);
     this.nextPlayer();
   }
 
@@ -206,7 +219,7 @@ export class ApiService {
       })
     }
     this.game.question = '';
-    this.game.players.forEach(r => { r.score = 0; });
+    this.game.players.forEach(r => { r.score = 0; r.correct=0; r.incorrect=0; });
     this.game.playerIdx = 0;
     this.game.currentRound = 0;
     await this.setGameState(GAME_STATE.SELECTING); // and save
@@ -225,6 +238,7 @@ export class ApiService {
   public currentPlayer() {
     return this.game.players[this.game.playerIdx];
   }
+
   async nextPlayer() {
     var nextState;
     // count remaining questions in round
@@ -255,10 +269,27 @@ export class ApiService {
     await this.setGameState(nextState); // and save
   }
 
+  protected computeScore(question) {
+    var result=0;
+    if (question.type === 'boolean') {
+      switch (question.difficulty) {
+        case 'easy': result=500; break;
+        case 'medium':result=1500; break;
+        case 'hard': result=3000; break;
+      }
+    } else {
+      switch (question.difficulty) {
+        case 'easy': result=1000; break;
+        case 'medium':result=2000; break;
+        case 'hard': result=4000; break;
+      }
+    }
+    return result;
+  }
 
-  async answerGood(points) {
+  async answerGood(question) {
     console.log("answerGood");
-    this.game.players[this.game.playerIdx].score += points;
+    this.game.players[this.game.playerIdx].score += this.computeScore(question);
     this.game.players[this.game.playerIdx].correct++;
     await this.nextPlayer(); // and save
   }

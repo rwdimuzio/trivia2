@@ -6,8 +6,8 @@
     <div>{{catCat(question)}}</div>
     <div class="difficulty">
       <ion-icon name="star"></ion-icon>
-      <ion-icon *ngIf="true || question?.difficulty!=='easy'" name="star"></ion-icon>
-      <ion-icon *ngIf="true || question?.difficulty==='hard'" name="star"></ion-icon>
+      <ion-icon *ngIf="question?.difficulty!=='easy'" name="star"></ion-icon>
+      <ion-icon *ngIf="question?.difficulty==='hard'" name="star"></ion-icon>
     </div>
   </div>
   </div>

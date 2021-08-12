@@ -97,7 +97,7 @@ export class GamePage implements OnInit {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'GameOver',
-      subHeader: 'Leader: ' + this.api.whoHasHighScore(),
+      subHeader: 'Winner: ' + this.api.whoHasHighScore(),
       message: 'Score: ' + this.api.getHighScore(),
       buttons: ['OK']
     });
@@ -135,13 +135,13 @@ export class GamePage implements OnInit {
       //case GAME_STATE.NEW_GAME:
       //case GAME_STATE.PLAYERS:
       case GAME_STATE.SELECTING:
-        result = "Select";
+        result = "Choose question";
         break;
       case GAME_STATE.ANSWERING:
-        result = "Answer";
+        result = "Select answer";
         break;
       case GAME_STATE.ROUND_BREAK:
-        result = "Answer";
+        result = "";
         break;
       case GAME_STATE.GAME_ENDED:
       case GAME_STATE.GAME_OVER:

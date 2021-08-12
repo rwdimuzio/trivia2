@@ -5,17 +5,20 @@
 </ion-header>
 
 <ion-content>
-
-  <br />
-  <br />
+<div style="width: 80%; margin:auto;">
   <ion-button (click)="goName()"  expand="block" color="success">Start</ion-button>
-  <br />
-  <br />
-  <ion-button [routerLink]="['/game']"expand="block" color="warning">Resume</ion-button>
-  <br />
-  <br />
-  <ion-button (click)="resetIt()">Trippin</ion-button>
-  <br />
-  <ion-button (click)="restartIt()">Start Again</ion-button>
+  <ion-button [disabled]='!canResume()'[routerLink]="['/game']"expand="block" color="light">Resume</ion-button>
+</div>
 
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button color="light"><ion-icon name="bug"></ion-icon></ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-fab-button (click)="resetIt()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="restartIt()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>  
+  </ion-fab>
 </ion-content>

@@ -33,5 +33,8 @@ export class StartPage implements OnInit {
     await this.api.restartGame();
     this.router.navigate(['/game']);
   }
+  canResume(){
+    return this.game?.rounds.length>0;
+  }
 
 }

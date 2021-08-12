@@ -31,4 +31,12 @@ export class NamesPage implements OnInit {
     this.router.navigate(['/game']);
   }
 
+  canContinue():boolean{
+    return (
+      this.players[0].trim() +
+      this.players[1].trim() +
+      this.players[2].trim() +
+      this.players[3].trim() 
+    ) !='';
+  }
 }

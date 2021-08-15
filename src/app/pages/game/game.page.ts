@@ -59,12 +59,15 @@ export class GamePage implements OnInit {
         this.router.navigate(['/start']);
         break;
       case GAME_STATE.PLAYERS:
-        this.router.navigate(['/names']);
+        this.gameOver = false;
+        this.router.navigate(['/start']);
         break;
       case GAME_STATE.ROUND_BREAK:
+        this.gameOver = false;
         this.levelPause();
         break;
       case GAME_STATE.GAME_OVER:
+        this.gameOver = true;
         this.endGame();
         break;
       case GAME_STATE.GAME_ENDED:
@@ -112,7 +115,7 @@ export class GamePage implements OnInit {
     await this.api.endGame();
 
     console.log('onDidDismiss resolved with role', role);
-    this.router.navigate(['/start']);
+    //this.router.navigate(['/start']);
 
   }
   exitGame() {

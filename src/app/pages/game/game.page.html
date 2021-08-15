@@ -32,7 +32,7 @@
       <ion-grid>
         <ion-row class="header">
           <ion-col size="6">
-            &nbsp;
+            <ion-icon name='person'></ion-icon> Player
           </ion-col>
           <ion-col>
             <ion-icon name="close"></ion-icon>
@@ -79,6 +79,6 @@
     </ion-fab-button>
   </ion-fab>
 </ion-content>
-<ion-footer *ngIf="true || gameOver">
+<ion-footer *ngIf="gameOver">
   <ion-button  [routerLink]="['/start']"  color="success" expand="block">Finish</ion-button>
 </ion-footer>

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { CacheService } from "ionic-cache";
 import { BehaviorSubject } from 'rxjs';
 import { State } from '@angular-devkit/architect/src/progress-schema';
@@ -35,6 +34,7 @@ export class Player {
 }
 
 export class GamePlay {
+
   numQuestions: string = "12";
   numRounds: string = "2";
   players: Array<Player> = new Array(
@@ -43,6 +43,7 @@ export class GamePlay {
     new Player(''),
     new Player(''),
   );
+  categories: Array<any> = new Array();
   rounds: Array<any> = new Array();
   // game play
   gameState: GAME_STATE = GAME_STATE.NEW_GAME;
@@ -99,8 +100,10 @@ export class GamePlay {
   providedIn: 'root'
 })
 export class ApiService {
+  public readonly categories = [{ "id": 9, "name": "General Knowledge" }, { "id": 10, "name": "Entertainment: Books" }, { "id": 11, "name": "Entertainment: Film" }, { "id": 12, "name": "Entertainment: Music" }, { "id": 13, "name": "Entertainment: Musicals & Theatres" }, { "id": 14, "name": "Entertainment: Television" }, { "id": 15, "name": "Entertainment: Video Games" }, { "id": 16, "name": "Entertainment: Board Games" }, { "id": 17, "name": "Science & Nature" }, { "id": 18, "name": "Science: Computers" }, { "id": 19, "name": "Science: Mathematics" }, { "id": 20, "name": "Mythology" }, { "id": 21, "name": "Sports" }, { "id": 22, "name": "Geography" }, { "id": 23, "name": "History" }, { "id": 24, "name": "Politics" }, { "id": 25, "name": "Art" }, { "id": 26, "name": "Celebrities" }, { "id": 27, "name": "Animals" }, { "id": 28, "name": "Vehicles" }, { "id": 29, "name": "Entertainment: Comics" }, { "id": 30, "name": "Science: Gadgets" }, { "id": 31, "name": "Entertainment: Japanese Anime & Manga" }, { "id": 32, "name": "Entertainment: Cartoon & Animations" }];
+
   game: GamePlay = null;
-  gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME); 
+  gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME);
 
   token = "";
 
@@ -130,6 +133,10 @@ export class ApiService {
     return this.http.get('https://opentdb.com/api.php?amount=' + num + '&token=' + token).toPromise();
   }
 
+  public getOneQuestions(token: string, catId: number): Promise<any> {
+    return this.http.get('https://opentdb.com/api.php?amount=1&category=' + catId + '&token=' + token).toPromise();
+  }
+
 
   async getGame() {
     if (this.game == null) {
@@ -155,7 +162,7 @@ export class ApiService {
     return this.settingsProvider_getValue("game");
   }
 
-  async populateGame(playerlist: Array<String>) {
+  async populateGame(playerlist: Array<String>, categories: Array<any>) {
 
     // player list
     while (this.game.players.length) this.game.players.pop();
@@ -163,32 +170,50 @@ export class ApiService {
       if (name != '') {
         this.game.players.push(new Player(name));
       }
-    })
+    });
+
+    // categories
+    while (this.game.categories.length) this.game.categories.pop();
+    categories.forEach(row => {
+      this.game.categories.push(row);
+    });
+
+
 
     var numRounds = Number.parseInt(this.game.numRounds);
     var numQuestions = Number.parseInt(this.game.numQuestions);
 
     // get token 
     var token = await this.getToken();
+    var catList = [];
+    categories.forEach(row => {
+      catList.push(row);
+    });
+
 
     // all questions for all rounds
     while (this.game.rounds.length) this.game.rounds.pop();
 
     for (var i = 0; i < numRounds; i++) {
       var round = new Array();
-      var qs = await this.getQuestions(token, numQuestions);
-      if (qs.response_code === 0) {
-        qs.results.forEach(element => {
-          if (element.type === 'multiple') {
-            element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
-          }
-          element.state = QUESTION_STATE.UNANSWERED;
-          element.answer = '';
-          round.push(element);
-        });
+      for (var j = 0; j < numQuestions; j++) {
+        var cat = catList.shift();
+        catList.push(cat);
+        var qs = await this.getOneQuestions(token, cat.id);
+        console.log("Q--->",i,j,qs);
+        if (qs.response_code === 0) {
+          qs.results.forEach(element => {
+            if (element.type === 'multiple') {
+              element.qlist = this.mergeQandA(element.incorrect_answers, element.correct_answer);
+            }
+            element.state = QUESTION_STATE.UNANSWERED;
+            element.answer = '';
+            round.push(element);
+          });
+        } else {
+          console.log("epic fail");
+        }
         this.game.rounds.push(round);
-      } else {
-        console.log("epic fail");
       }
     }
     await this.restartGame(); // and save
@@ -202,7 +227,7 @@ export class ApiService {
       })
     }
     this.game.question = '';
-    this.game.players.forEach(r => { r.score = 0; r.correct=0; r.incorrect=0; });
+    this.game.players.forEach(r => { r.score = 0; r.correct = 0; r.incorrect = 0; });
     this.game.playerIdx = 0;
     this.game.currentRound = 0;
     await this.setGameState(GAME_STATE.SELECTING); // and save
@@ -253,18 +278,18 @@ export class ApiService {
   }
 
   protected computeScore(question) {
-    var result=0;
+    var result = 0;
     if (question.type === 'boolean') {
       switch (question.difficulty) {
-        case 'easy': result=500; break;
-        case 'medium':result=1500; break;
-        case 'hard': result=3000; break;
+        case 'easy': result = 500; break;
+        case 'medium': result = 1500; break;
+        case 'hard': result = 3000; break;
       }
     } else {
       switch (question.difficulty) {
-        case 'easy': result=1000; break;
-        case 'medium':result=2000; break;
-        case 'hard': result=4000; break;
+        case 'easy': result = 1000; break;
+        case 'medium': result = 2000; break;
+        case 'hard': result = 4000; break;
       }
     }
     return result;

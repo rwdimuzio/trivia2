@@ -23,7 +23,7 @@ export class GamePage implements OnInit {
   questions: Array<any> = [];
   gamePlayStateSubscription: any = null;
   token = "";
-
+  gameOver = false;
   constructor(private alertController: AlertController, private router: Router, private api: ApiService) { }
 
   ngOnInit() {
@@ -67,6 +67,10 @@ export class GamePage implements OnInit {
       case GAME_STATE.GAME_OVER:
         this.endGame();
         break;
+      case GAME_STATE.GAME_ENDED:
+        this.gameOver = true;
+        break;
+
     }
 
   }
@@ -161,7 +165,7 @@ export class GamePage implements OnInit {
   computeScorePct(player) {
     var result = '0%'
     if (player.correct + player.incorrect != 0) {
-      result = '' + Math.round(player.correct * 100 / (player.correct + player.incorrect))+'%';
+      result = '' + Math.round(player.correct * 100 / (player.correct + player.incorrect)) + '%';
     }
     return result;
   }

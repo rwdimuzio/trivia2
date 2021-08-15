@@ -79,3 +79,6 @@
     </ion-fab-button>
   </ion-fab>
 </ion-content>
+<ion-footer *ngIf="true || gameOver">
+  <ion-button  [routerLink]="['/start']"  color="success" expand="block">Finish</ion-button>
+</ion-footer>

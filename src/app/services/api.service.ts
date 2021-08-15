@@ -99,30 +99,10 @@ export class GamePlay {
   providedIn: 'root'
 })
 export class ApiService {
-  // A global place to tell all the programs how to open external pages
-  public browserOptions: InAppBrowserOptions = {
-    location: 'yes',//Or 'no' 
-    hidden: 'no', //Or  'yes'
-    clearcache: 'yes',
-    clearsessioncache: 'yes',
-    zoom: 'yes',//Android only ,shows browser zoom controls 
-    hardwareback: 'yes',
-    mediaPlaybackRequiresUserAction: 'no',
-    shouldPauseOnSuspend: 'no', //Android only 
-    closebuttoncaption: 'Close', //iOS only
-    disallowoverscroll: 'no', //iOS only 
-    toolbar: 'yes', //iOS only 
-    enableViewportScale: 'no', //iOS only 
-    allowInlineMediaPlayback: 'no',//iOS only 
-    presentationstyle: 'pagesheet',//iOS only 
-    fullscreen: 'yes',//Windows only    
-  };
   game: GamePlay = null;
-  gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME); // 0 is the initial value
+  gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME); 
 
   token = "";
-
-  //  https://opentdb.com/api_token.php?command=request
 
   GROUP_KEY = 'triviality-group';
   ttl = 60 * 15; // 15 miuntes  to live
@@ -176,6 +156,8 @@ export class ApiService {
   }
 
   async populateGame(playerlist: Array<String>) {
+
+    // player list
     while (this.game.players.length) this.game.players.pop();
     playerlist.forEach(name => {
       if (name != '') {
@@ -185,9 +167,11 @@ export class ApiService {
 
     var numRounds = Number.parseInt(this.game.numRounds);
     var numQuestions = Number.parseInt(this.game.numQuestions);
+
     // get token 
     var token = await this.getToken();
-    console.log("Yer token", token);
+
+    // all questions for all rounds
     while (this.game.rounds.length) this.game.rounds.pop();
 
     for (var i = 0; i < numRounds; i++) {
@@ -200,7 +184,6 @@ export class ApiService {
           }
           element.state = QUESTION_STATE.UNANSWERED;
           element.answer = '';
-          //console.log(element);
           round.push(element);
         });
         this.game.rounds.push(round);
@@ -208,7 +191,7 @@ export class ApiService {
         console.log("epic fail");
       }
     }
-    await this.setGameState(GAME_STATE.SELECTING); // and save
+    await this.restartGame(); // and save
   }
   async restartGame() {
     for (var i in this.game.rounds) {

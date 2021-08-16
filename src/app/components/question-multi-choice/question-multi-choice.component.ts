@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { QUESTION_STATE } from 'src/app/classes/enum';
 import { ApiService } from 'src/app/services/api.service';
 
 @Component({
@@ -7,10 +8,10 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./question-multi-choice.component.scss'],
 })
 export class QuestionMultiChoiceComponent implements OnInit {
-  UNANSWERED = 0;
-  SELECTED = 1;
-  CORRECT = 2;
-  INCORRECT = 3;
+  UNANSWERED = QUESTION_STATE.UNANSWERED;
+  SELECTED = QUESTION_STATE.SELECTED;
+  CORRECT = QUESTION_STATE.CORRECT;
+  INCORRECT = QUESTION_STATE.INCORRECT;
 
   public gameObject: any;
   @Input() public question: any;

@@ -1,116 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CacheService } from "ionic-cache";
 import { BehaviorSubject } from 'rxjs';
 import { State } from '@angular-devkit/architect/src/progress-schema';
-
-export enum QUESTION_STATE {
-  UNANSWERED = 0,
-  SELECTED = 1,
-  CORRECT = 2,
-  INCORRECT = 3
-};
-export enum GAME_STATE {
-  NEW_GAME = 0,
-  PLAYERS = 1,
-  SELECTING = 2,
-  ANSWERING = 3,
-  ROUND_BREAK = 4,
-  GAME_OVER = 5,
-  GAME_ENDED = 6
-};
-
-export class Player {
-  name: string = '';
-  score: number = 0;
-  correct: number = 0;
-  incorrect: number = 0;
-  constructor(name) {
-    this.name = name;
-    this.score = 0;
-    this.correct = 0;
-    this.incorrect = 0;
-  }
-}
-
-export class GamePlay {
-
-  numQuestions: string = "12";
-  numRounds: string = "2";
-  players: Array<Player> = new Array(
-    new Player('Sallie'),
-    new Player('Rich'),
-    new Player(''),
-    new Player(''),
-  );
-  categories: Array<any> = new Array();
-  rounds: Array<any> = new Array();
-  // game play
-  gameState: GAME_STATE = GAME_STATE.NEW_GAME;
-  currentRound: number = 0;
-  playerIdx: number = 0;
-  question: any = '';
-
-  public nextPlayer() {
-    this.playerIdx = ((this.playerIdx + 1) % this.players.length);
-  }
-
-  protected computePoints(question) {
-    var result = 0;
-    if (question.type == "boolean") {
-      switch (question.difficulty) {
-        case "hard":
-          break;
-      }
-
-    } else {
-
-    }
-    return result;
-  }
-  public answerGood(question) {
-    console.log("answerGood");
-    this.players[this.playerIdx].score += this.computePoints(question);
-    this.nextPlayer();
-  }
-
-  public answerBad() {
-    console.log("answerBad");
-    this.nextPlayer();
-  }
-
-  public currentPlayer() {
-    return this.players[this.playerIdx];
-  }
-
-}
+import { GAME_STATE, QUESTION_STATE } from '../classes/enum';
+import { GamePlay } from '../classes/game-play';
+import { Player } from '../classes/player';
+import { StorageService } from './storage.service';
 
 
 /*
-  Consume api resources.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-
+  Data source:
   https://opentdb.com/
-
 */
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  public readonly categories = [{ "id": 9, "name": "General Knowledge" }, { "id": 10, "name": "Entertainment: Books" }, { "id": 11, "name": "Entertainment: Film" }, { "id": 12, "name": "Entertainment: Music" }, { "id": 13, "name": "Entertainment: Musicals & Theatres" }, { "id": 14, "name": "Entertainment: Television" }, { "id": 15, "name": "Entertainment: Video Games" }, { "id": 16, "name": "Entertainment: Board Games" }, { "id": 17, "name": "Science & Nature" }, { "id": 18, "name": "Science: Computers" }, { "id": 19, "name": "Science: Mathematics" }, { "id": 20, "name": "Mythology" }, { "id": 21, "name": "Sports" }, { "id": 22, "name": "Geography" }, { "id": 23, "name": "History" }, { "id": 24, "name": "Politics" }, { "id": 25, "name": "Art" }, { "id": 26, "name": "Celebrities" }, { "id": 27, "name": "Animals" }, { "id": 28, "name": "Vehicles" }, { "id": 29, "name": "Entertainment: Comics" }, { "id": 30, "name": "Science: Gadgets" }, { "id": 31, "name": "Entertainment: Japanese Anime & Manga" }, { "id": 32, "name": "Entertainment: Cartoon & Animations" }];
 
   game: GamePlay = null;
   gamePlayStateBehaviorSubject = new BehaviorSubject(GAME_STATE.NEW_GAME);
 
-  token = "";
-
-  GROUP_KEY = 'triviality-group';
-  ttl = 60 * 15; // 15 miuntes  to live
-
-  constructor(public http: HttpClient, private cache: CacheService) {
+  constructor(public http: HttpClient, private storage:StorageService) {
 
   }
 
@@ -123,14 +34,6 @@ export class ApiService {
         }
         return token;
       });
-  }
-
-  public resetToken(token): Promise<any> {
-    return this.http.get('https://opentdb.com/api_token.php?command=reset&token=' + token).toPromise();
-  }
-
-  public getQuestions(token: string, num: number): Promise<any> {
-    return this.http.get('https://opentdb.com/api.php?amount=' + num + '&token=' + token).toPromise();
   }
 
   public getOneQuestions(token: string, catId: number): Promise<any> {
@@ -156,10 +59,15 @@ export class ApiService {
     return this.game;
   }
   async saveGame() {
-    return this.settingsProvider_setValue("game", this.game);
+    return this.storage.setValue("game", this.game);
   }
   async loadGame(): Promise<GamePlay> {
-    return this.settingsProvider_getValue("game");
+    return this.storage.getValue("game");
+  }
+
+  async newGame(): Promise<any> {
+    this.game = new GamePlay();
+    return this.saveGame();
   }
 
   async populateGame(playerlist: Array<String>, categories: Array<any>) {
@@ -343,32 +251,6 @@ export class ApiService {
 
 
 
-  // TODO consider moving this
-
-  SETTINGS_KEY: string = "settings";
-  SETTINGS_GROUP: string = "settings";
-  SETTINGS_TTL = 10 * 365 * 24 * 60 * 60; // 10 year time to live
-
-  async settingsProvider_setValue(key: string, value: any) {
-    let jsonObj = JSON.stringify(value);
-    //console.log("setValue: " + key + " ->" + jsonObj);
-    return this.cache.saveItem(key, jsonObj, this.SETTINGS_GROUP, this.SETTINGS_TTL);
-  }
-
-  settingsProvider_getValue(key: string): Promise<any> {
-    return this.cache.getItem(key).then(res => {
-      //console.log('getValue',res);
-      return JSON.parse(res);
-    });
-  }
-
-  async clearSettings(): Promise<any> {
-    this.game = new GamePlay();
-    //while(this.game.rounds.length) this.game.rounds.pop();
-    //this.game.playerIdx=0;
-    //this.game.question='';
-    return this.saveGame();
-  }
 
 
   // -------------------------------------------------------------------

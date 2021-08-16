@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiService, GamePlay, GAME_STATE } from 'src/app/services/api.service';
+import { GAME_STATE } from 'src/app/classes/enum';
+import { GamePlay } from 'src/app/classes/game-play';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-start',
@@ -23,7 +25,7 @@ export class StartPage implements OnInit {
   }
 
   async resetIt() { 
-    await this.api.clearSettings();
+    await this.api.newGame();
     this.router.navigate(['/start'])
     .then(() => {
       window.location.reload();

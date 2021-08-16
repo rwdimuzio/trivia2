@@ -3,14 +3,6 @@
     <div slot="start" style="padding-right: 20px; max-width: 100px" (click)="exitGame()">
       <img src='assets/icon/favicon.png' />
     </div>
-    <div *ngIf="loaded">
-      <div>
-        {{currentPlayer()}}
-      </div>
-      <div>
-        {{gameState()}}
-      </div>
-    </div>
   </ion-toolbar>
 </ion-header>
 
@@ -79,6 +71,16 @@
     </ion-fab-button>
   </ion-fab>
 </ion-content>
-<ion-footer *ngIf="gameOver">
-  <ion-button  [routerLink]="['/start']"  color="success" expand="block">Finish</ion-button>
+<ion-footer>
+  <div *ngIf="loaded && !gameOver" style="background-color:#d2d2d2; padding: 10px">
+    <div style="width: 80%; margin: auto; font-size: large;">
+      <div >
+        {{currentPlayer()}}
+      </div>
+      <div>
+        {{gameState()}}
+      </div>  
+    </div>
+  </div>
+  <ion-button  *ngIf="gameOver"  [routerLink]="['/start']"  color="success" expand="block">Finish</ion-button>
 </ion-footer>

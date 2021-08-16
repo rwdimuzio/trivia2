@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ApiService, GAME_STATE } from 'src/app/services/api.service';
+import { GAME_STATE, QUESTION_STATE } from 'src/app/classes/enum';
+import { ApiService} from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-question-summary',
@@ -7,10 +8,10 @@ import { ApiService, GAME_STATE } from 'src/app/services/api.service';
   styleUrls: ['./question-summary.component.scss'],
 })
 export class QuestionSummaryComponent implements OnInit {
-  readonly UNANSWERED = 0;
-  readonly SELECTED = 1;
-  readonly CORRECT = 2;
-  readonly INCORRECT = 3;
+  UNANSWERED = QUESTION_STATE.UNANSWERED;
+  SELECTED = QUESTION_STATE.SELECTED;
+  CORRECT = QUESTION_STATE.CORRECT;
+  INCORRECT = QUESTION_STATE.INCORRECT;
 
   public gameObject: any;
   @Input() public questions: any[];

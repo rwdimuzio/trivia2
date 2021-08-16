@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { ApiService, GAME_STATE, QUESTION_STATE } from 'src/app/services/api.service';
+import { QUESTION_STATE, GAME_STATE } from 'src/app/classes/enum';
+import { ApiService} from 'src/app/services/api.service';
 
 
 @Component({

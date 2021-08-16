@@ -213,8 +213,8 @@ export class ApiService {
         } else {
           console.log("epic fail");
         }
-        this.game.rounds.push(round);
       }
+      this.game.rounds.push(round);
     }
     await this.restartGame(); // and save
   }

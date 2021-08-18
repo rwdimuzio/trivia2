@@ -1,10 +1,13 @@
 <h1>{{question.category}}</h1>
-<ion-item  class="ion-no-padding">
-  <div  [innerHTML]="question.question">
+<ion-item class="ion-no-padding">
+  <div [innerHTML]="question.question">
   </div>
 </ion-item>
 <ion-list *ngIf="question.type==='boolean'">
-    <ion-button class="{{selectTrueFalseIcon(question,'False')}}" (click)="guessTrueFalse(question,'False')"><ion-icon name="{{selectTrueFalseIcon(question,'False')}}" ></ion-icon>False</ion-button>
-    <ion-button class="{{selectTrueFalseIcon(question,'True')}}" (click)="guessTrueFalse(question,'True')"><ion-icon name="{{selectTrueFalseIcon(question,'True')}}" ></ion-icon>True</ion-button>
+  <ion-button class="{{selectIcon(question,'False')}}" (click)="guess(question,'False')">
+    <ion-icon name="{{selectIcon(question,'False')}}"></ion-icon>False
+  </ion-button>
+  <ion-button class="{{selectIcon(question,'True')}}" (click)="guess(question,'True')">
+    <ion-icon name="{{selectIcon(question,'True')}}"></ion-icon>True
+  </ion-button>
 </ion-list>
-  

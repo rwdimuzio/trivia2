@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { QUESTION_STATE } from 'src/app/classes/enum';
 import { ApiService } from 'src/app/services/api.service';
+
+/**
+ * component to display and process a multiple choice type question
+ */
+
 
 @Component({
   selector: 'app-question-multi-choice',
@@ -7,10 +13,10 @@ import { ApiService } from 'src/app/services/api.service';
   styleUrls: ['./question-multi-choice.component.scss'],
 })
 export class QuestionMultiChoiceComponent implements OnInit {
-  UNANSWERED = 0;
-  SELECTED = 1;
-  CORRECT = 2;
-  INCORRECT = 3;
+  UNANSWERED = QUESTION_STATE.UNANSWERED;
+  SELECTED = QUESTION_STATE.SELECTED;
+  CORRECT = QUESTION_STATE.CORRECT;
+  INCORRECT = QUESTION_STATE.INCORRECT;
 
   public gameObject: any;
   @Input() public question: any;
@@ -27,7 +33,12 @@ export class QuestionMultiChoiceComponent implements OnInit {
     this.loaded = true;
   }
 
-
+  /**
+   * register a user's guess
+   * @param question - 
+   * @param answer - their quess
+   * @returns 
+   */
   guess(question, answer) {
     if (question.answer != "") { return; }
     question.answer = answer;
@@ -39,7 +50,13 @@ export class QuestionMultiChoiceComponent implements OnInit {
     }
   }
 
-  selectQuestionIcon(question, answer) {
+  /**
+   * use the question answered state to choose a color/icon 
+   * @param question 
+   * @param answer 
+   * @returns 
+   */
+  selectIcon(question, answer) {
     var result = "noicon";
     if (question.answer == "") {
       result = "noicon"; // no guesses yet

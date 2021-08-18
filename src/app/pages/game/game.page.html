@@ -1,15 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <div slot="start" style="padding-right: 20px; max-width: 100px" (click)="exitGame()">
+    <div slot="start" class="favicon" (click)="exitGame()">
       <img src='assets/icon/favicon.png' />
-    </div>
-    <div *ngIf="loaded">
-      <div>
-        {{currentPlayer()}}
-      </div>
-      <div>
-        {{gameState()}}
-      </div>
     </div>
   </ion-toolbar>
 </ion-header>
@@ -19,7 +11,7 @@
   <ion-list *ngIf="loaded && !showsummary">
     <app-question-summary [questions]='questions'></app-question-summary>
     <div *ngIf="gameObject.question!=''">
-      <div style="width: 90%; margin: auto;">
+      <div class="w90">
         <app-question-multi-choice *ngIf="gameObject.question.type==='multiple'" [question]="gameObject.question">
         </app-question-multi-choice>
         <app-question-true-false *ngIf="gameObject.question.type==='boolean'" [question]='gameObject.question'>
@@ -47,26 +39,26 @@
             Score
           </ion-col>
         </ion-row>
-        </ion-grid>
+      </ion-grid>
     </ion-card>
     <ion-card>
       <ion-grid>
-      <ion-row *ngFor="let player of gameObject.players">
-        <ion-col size="6">
-          <ion-icon name='person'></ion-icon> {{player.name}}
-        </ion-col>
-        <ion-col>
-          {{player.incorrect}}
-        </ion-col>
-        <ion-col>
-          {{player.correct}}
-        </ion-col>
-        <ion-col>{{computeScorePct(player)}}
-        </ion-col>
-        <ion-col>
-          {{player.score}}
-        </ion-col>
-      </ion-row>
+        <ion-row *ngFor="let player of gameObject.players">
+          <ion-col size="6">
+            <ion-icon name='person'></ion-icon> {{player.name}}
+          </ion-col>
+          <ion-col>
+            {{player.incorrect}}
+          </ion-col>
+          <ion-col>
+            {{player.correct}}
+          </ion-col>
+          <ion-col>{{computeScorePct(player)}}
+          </ion-col>
+          <ion-col>
+            {{player.score}}
+          </ion-col>
+        </ion-row>
       </ion-grid>
     </ion-card>
   </ion-list>
@@ -79,6 +71,16 @@
     </ion-fab-button>
   </ion-fab>
 </ion-content>
-<ion-footer *ngIf="gameOver">
-  <ion-button  [routerLink]="['/start']"  color="success" expand="block">Finish</ion-button>
+<ion-footer>
+  <div *ngIf="loaded && !gameOver" class="userprompt">
+    <div class="w80">
+      <div>
+        {{playerPrompt()}}
+      </div>
+      <div>
+        {{gameState()}}
+      </div>
+    </div>
+  </div>
+  <ion-button *ngIf="gameOver" [routerLink]="['/start']" color="success" expand="block">Finish</ion-button>
 </ion-footer>

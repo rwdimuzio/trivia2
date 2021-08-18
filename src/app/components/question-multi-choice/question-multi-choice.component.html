@@ -1,14 +1,15 @@
 <h1>{{question?.category}}</h1>
-<ion-item  class="ion-no-padding">
-  <div  [innerHTML]="question.question">
+<ion-item class="ion-no-padding">
+  <div [innerHTML]="question.question">
   </div>
 </ion-item>
 <ion-list *ngIf="question?.type==='multiple'" no-lines>
-  <ion-item *ngFor="let answer of question?.qlist" (click)="guess(question,answer)" class="{{selectQuestionIcon(question,answer)}}" color="none" lines="none">
-    <div class="transparent" style="width: 100%">
-      <ion-icon name="{{selectQuestionIcon(question,answer)}}" slot="first"></ion-icon>
-      <div  [innerHTML]="answer">
-      </div>  
+  <ion-item *ngFor="let answer of question?.qlist" (click)="guess(question,answer)"
+    class="{{selectIcon(question,answer)}}" color="none" lines="none">
+    <div class="transparent w100">
+      <ion-icon name="{{selectIcon(question,answer)}}" slot="first"></ion-icon>
+      <div [innerHTML]="answer">
+      </div>
     </div>
   </ion-item>
 </ion-list>

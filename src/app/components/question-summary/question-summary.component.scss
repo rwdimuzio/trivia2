@@ -24,12 +24,16 @@
 }
 
 .anchor > div > div {
-    float: left; width: 23%; border: solid 3px;  padding: 3px; margin: 3px;  
-    color:#555;
+    float: left;
+    width: 23%;
+    border: solid 3px;
+    padding: 3px;
+    margin: 3px;
+    color: #555;
     font-size: x-large;
-    text-align: center; 
+    text-align: center;
     border-radius: 10%;
-};
+}
 
 .difficulty {
     font-size: smaller;
@@ -38,9 +42,13 @@
 }
 
 .o100 {
-    opacity: 1.0 !important;
+    opacity: 1 !important;
 }
 
 .o50 {
     opacity: 0.3 !important;
+}
+
+.left {
+    float: left;
 }

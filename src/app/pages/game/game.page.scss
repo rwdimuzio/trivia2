@@ -1,11 +1,8 @@
-
-
 ion-col {
     background-color: transparent;
 }
 
 ion-row {
-    
     padding-top: 10px;
     padding-bottom: 5px;
     margin-bottom: 5px;
@@ -19,4 +16,25 @@ ion-row.header {
     background-color: #fff;
     color: #444;
     font-weight: bold;
+}
+
+.favicon {
+    padding-right: 20px;
+    max-width: 100px;
+}
+
+.w90 {
+    width: 90%;
+    margin: auto;
+}
+.w80 {
+    width: 90%;
+    margin: auto;
+}
+
+.userprompt {
+    border-top: solid 1px #0d2c6c;
+    background-color: #f5f5d8ab;
+    padding: 10px;
+    font-size: large;
 }

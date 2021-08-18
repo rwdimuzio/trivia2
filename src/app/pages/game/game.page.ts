@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { QUESTION_STATE, GAME_STATE } from 'src/app/classes/enum';
-import { ApiService} from 'src/app/services/api.service';
+import { ApiService } from 'src/app/services/api.service';
 
+/**
+ * Main game play happens here.
+ * 
+ */
 
 @Component({
   selector: 'app-game',
@@ -16,7 +20,7 @@ export class GamePage implements OnInit {
   CORRECT = QUESTION_STATE.SELECTED;
   INCORRECT = QUESTION_STATE.INCORRECT;
 
-  showsummary = false;
+  showsummary = false; // toggle for game div or playere score summary div
   loading = false;
   loaded = false;
   noSources = false;
@@ -25,13 +29,16 @@ export class GamePage implements OnInit {
   gamePlayStateSubscription: any = null;
   token = "";
   gameOver = false;
+
   constructor(private alertController: AlertController, private router: Router, private api: ApiService) { }
 
   ngOnInit() {
   }
 
+  /**
+   * 
+   */
   async ionViewWillEnter() {
-
     this.gameObject = await this.api.getGame();
     this.questions = this.gameObject.rounds[this.gameObject.currentRound];
     this.loaded = true;
@@ -44,6 +51,9 @@ export class GamePage implements OnInit {
     })
   }
 
+  /**
+   * 
+   */
   ionViewWillLeave() {
     if (this.gamePlayStateSubscription != null) {
       console.log("Remove obserer");
@@ -51,42 +61,43 @@ export class GamePage implements OnInit {
       this.gamePlayStateSubscription = null;
     }
   }
+
+  /**
+   * observed a game state change present user with options depending on what it is 
+   * @param state 
+   */
   async handleStateChange(state) {
     this.questions = this.gameObject.rounds[this.gameObject.currentRound];
 
     console.log("handle State Change: " + state + "  " + this.api.describeGameState(state));
     switch (state) {
       case GAME_STATE.NEW_GAME:
-        this.router.navigate(['/start']);
+        this.router.navigate(['/start']); // you don't belong here
         break;
       case GAME_STATE.PLAYERS:
         this.gameOver = false;
-        this.router.navigate(['/start']);
+        this.router.navigate(['/start']); // you don't belong here
         break;
       case GAME_STATE.ROUND_BREAK:
         this.gameOver = false;
-        this.levelPause();
+        this.levelPauseDialog(); // 
         break;
       case GAME_STATE.GAME_OVER:
         this.gameOver = true;
-        this.endGame();
+        this.gameOverDialog();
         break;
       case GAME_STATE.GAME_ENDED:
         this.gameOver = true;
         break;
-
     }
 
   }
 
-  loadNextRound() {
-
-  }
-  loadRound() {
-
-  }
-
-  async levelPause() {
+  /**
+   *  event:  between level break 
+   *  present a dialog with high score summarized
+   */
+  async levelPauseDialog() {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Level Break',
@@ -101,7 +112,11 @@ export class GamePage implements OnInit {
     await this.api.nextRound();
   }
 
-  async endGame() {
+  /**
+   *  event: game over
+   *  present user with summary of  
+   */
+  async gameOverDialog() {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'GameOver',
@@ -119,11 +134,20 @@ export class GamePage implements OnInit {
     //this.router.navigate(['/start']);
 
   }
+
+  /**
+   * time to leave
+   */
   exitGame() {
     this.router.navigate(['/start']);
   }
 
-  currentPlayer() {
+
+  /**
+   * shows the current player name or the winner
+   * @returns string 
+   */
+  playerPrompt() {
     var result = "";
     switch (this.gameObject.gameState) {
       case GAME_STATE.GAME_ENDED:
@@ -137,6 +161,11 @@ export class GamePage implements OnInit {
     return result;
 
   }
+  /**
+   * shows what the game expects the player to do next, 
+   * or a score summary when game is over
+   * @returns string
+   */
   gameState(): string {
     var result = "";
     switch (this.gameObject.gameState) {
@@ -162,10 +191,18 @@ export class GamePage implements OnInit {
     return result;
   }
 
+  /**
+   * Toggle betweeen the summary div and main play div 
+   */
   toggleSummary() {
     this.showsummary = this.showsummary ? false : true
   }
 
+  /**
+   * summarize percent answered correctly by the play
+   * @param player 
+   * @returns percent
+   */
   computeScorePct(player) {
     var result = '0%'
     if (player.correct + player.incorrect != 0) {

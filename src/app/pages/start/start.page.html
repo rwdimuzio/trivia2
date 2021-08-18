@@ -1,27 +1,29 @@
 <ion-header>
   <ion-toolbar>
-    <div slot="start" style="padding-right: 20px; max-width: 100px">
+    <div slot="start" class="favicon">
       <img src='assets/icon/favicon.png' />
     </div>
-      <ion-title>Triviocity v1.2</ion-title>
+    <ion-title>Triviocity v1.21</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-<div style="width: 80%; margin:auto;">
-  <ion-button (click)="goName()"  expand="block" color="success">Start</ion-button>
-  <ion-button [disabled]='!canResume()'[routerLink]="['/game']"expand="block" color="light">Resume</ion-button>
-</div>
+  <div class="w80">
+    <ion-button (click)="gotoParametersPage()" expand="block" color="success">Start</ion-button>
+    <ion-button [disabled]='!canResume()' [routerLink]="['/game']" expand="block" color="light">Resume</ion-button>
+  </div>
 
   <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button color="light"><ion-icon name="bug"></ion-icon></ion-fab-button>
+    <ion-fab-button color="light">
+      <ion-icon name="bug"></ion-icon>
+    </ion-fab-button>
     <ion-fab-list side="start">
-      <ion-fab-button (click)="resetIt()">
+      <ion-fab-button (click)="newGame()">
         <ion-icon name="trash"></ion-icon>
       </ion-fab-button>
-      <ion-fab-button (click)="restartIt()">
+      <ion-fab-button (click)="restartGame()">
         <ion-icon name="refresh"></ion-icon>
       </ion-fab-button>
-    </ion-fab-list>  
+    </ion-fab-list>
   </ion-fab>
 </ion-content>

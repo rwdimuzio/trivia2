@@ -8,6 +8,7 @@
 
 <ion-content>
   <ion-list *ngIf="game">
+
     <ion-item>
       <ion-label>Rounds</ion-label>
       <ion-select [(ngModel)]="game.numRounds">
@@ -27,30 +28,28 @@
         <ion-select-option value="16">16</ion-select-option>
       </ion-select>
     </ion-item>
-    <ion-item style="margin: 0px" no-line>
-      <h3
-        style="width: 100%; height: 25px; text-align: center; color: #444; background-color: #f5dd0a; padding: 0px !important; margin: 0px !important;">
-        Teams</h3>
+
+    <ion-item lines="none">
+      <h3>Teams</h3>
     </ion-item>
-    <ion-item>
+
+    <ion-item lines="none">
       <ion-input placeholder="team 1" [(ngModel)]="players[0]"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item lines="none">
       <ion-input placeholder="team 2" [(ngModel)]="players[1]"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item lines="none">
       <ion-input placeholder="team 3" [(ngModel)]="players[2]"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item lines="none">
       <ion-input placeholder="team 4" [(ngModel)]="players[3]"></ion-input>
     </ion-item>
-    <ion-item style="margin: 0px" no-line>
-      <h3
-        style="width: 100%; height: 25px; text-align: center; color: #444; background-color: #f5dd0a; padding: 0px !important; margin: 0px !important;">
-        Teams</h3>
+
+    <ion-item no-line>
+      <h3>Categories</h3>
     </ion-item>
     <ng-container *ngFor="let cat of categories">
-      
       <ion-item (click)="toggleCat(cat)" [ngClass]="isSelected(cat) ? 'selected' : 'not-selected'">
         <ion-icon *ngIf="isSelected(cat)" name="checkbox"></ion-icon>
         <ion-icon *ngIf="!isSelected(cat)" name="square-outline"></ion-icon>

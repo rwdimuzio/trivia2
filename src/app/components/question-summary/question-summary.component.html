@@ -1,14 +1,18 @@
 <ion-item *ngIf="!loaded">Loading</ion-item>
 <div *ngIf="loaded" class="anchor">
   <div *ngFor="let question of questions" (click)="select(question)">
-    <div class='{{catCat(question)}} {{opaque(question)}}' >
-      <ion-icon *ngIf="question.type=='boolean'" name="checkmark" class="difficulty" style="float: left"></ion-icon>
-    <div>{{catCat(question)}}</div>
-    <div class="difficulty">
-      <ion-icon name="star"></ion-icon>
-      <ion-icon *ngIf="question?.difficulty!=='easy'" name="star"></ion-icon>
-      <ion-icon *ngIf="question?.difficulty==='hard'" name="star"></ion-icon>
+    <div class='{{categoryCode(question)}} {{opaque(question)}}'>
+
+      <ion-icon *ngIf="question.type=='boolean'" name="checkmark" class="difficulty left"></ion-icon>
+
+      <div>{{categoryCode(question)}}</div>
+
+      <!-- show 1 to 3 stars based on difficulty and some clever logic -->
+      <div class="difficulty">
+        <ion-icon name="star"></ion-icon>
+        <ion-icon *ngIf="question?.difficulty!=='easy'" name="star"></ion-icon>
+        <ion-icon *ngIf="question?.difficulty==='hard'" name="star"></ion-icon>
+      </div>
     </div>
-  </div>
   </div>
 </div>

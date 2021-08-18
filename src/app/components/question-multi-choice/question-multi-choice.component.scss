@@ -13,7 +13,7 @@ ion-avatar {
 .happy {
     background: #d3ffd3;
 }
-.happy ion-icon { 
+.happy ion-icon {
     color: #81f781;
 }
 ion-item.happy {
@@ -22,31 +22,27 @@ ion-item.happy {
 
 .sad {
     background: #ffeaea;
-
 }
-.sad ion-icon { 
+.sad ion-icon {
     color: #ff9797;
 }
 
-
-.star {    
+.star {
     background: #f8f8f8;
-
 }
-.star ion-icon { 
+.star ion-icon {
     color: #ccc;
 }
-
 
 .transparent {
     --background: transparent;
 }
 
-.transparent ion-icon { 
+.transparent ion-icon {
     float: left;
     min-width: 50px;
 }
-.transparent div { 
+.transparent div {
     float: left;
 }
 ion-item {
@@ -61,23 +57,26 @@ ion-badge.difficulty {
     min-width: 70px;
 }
 
-ion-button.noicon{
+ion-button.noicon {
     --background: #eee;
-    --color:  #aaa;
+    --color: #aaa;
 }
 
-ion-button.happy{
+ion-button.happy {
     --background: #d3ffd3;
-    --color:  #56d356;
+    --color: #56d356;
 }
-ion-button.sad{
+ion-button.sad {
     --background: #ffeaea;
-    --color:  #fa9797;
+    --color: #fa9797;
 }
 ion-list ion-button {
     width: 48%;
     margin: auto;
     margin-right: 5px;
     padding-right: 3px;
+}
 
+.w100 {
+    width: 100%;
 }
